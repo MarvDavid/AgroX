@@ -11,7 +11,7 @@ export default function Toast() {
 
   return (
     <div className="agrox-toast">
-      <CheckCircle2 size={18} style={{ color: 'var(--primary-500)' }} />
+      <CheckCircle2 size={18} style={{ color: 'var(--color-success)' }} />
       <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>{toastMessage}</span>
     </div>
   );

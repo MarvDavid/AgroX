@@ -36,7 +36,7 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
             style={{
               left: 'auto',
               right: '0.75rem',
-              background: 'var(--accent-gold)',
+              background: 'var(--color-accent)',
             }}
           >
             SAVE {Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
@@ -59,16 +59,16 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
           <MapPin size={14} />
           <span>{product.seller.location}</span>
           {product.seller.verified && (
-            <CheckCircle2 size={14} style={{ color: 'var(--primary-600)' }} />
+            <CheckCircle2 size={14} style={{ color: 'var(--color-success)' }} />
           )}
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.85rem' }}>
-          <div style={{ display: 'flex', color: 'var(--accent-gold)' }}>
+          <div style={{ display: 'flex', color: 'var(--color-accent)' }}>
             <Star size={14} fill="currentColor" />
           </div>
           <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>{product.rating}</span>
-          <span style={{ fontSize: '0.8rem', color: 'var(--text-light)' }}>
+          <span style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)' }}>
             ({product.reviewsCount})
           </span>
         </div>

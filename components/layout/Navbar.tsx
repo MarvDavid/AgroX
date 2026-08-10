@@ -27,10 +27,7 @@ export default function Navbar({
         <div className="agrox-nav-wrapper">
           {/* Logo */}
           <Link href="/" className="agrox-brand">
-            <div className="agrox-brand-icon">
-              <Sprout size={22} />
-            </div>
-            <span>AgroX</span>
+            <img src="/header-logo-agroX.webp" alt="AgroX Logo" style={{ height: '50px', width: 'auto' }} />
           </Link>
 
           {/* Search bar */}

@@ -33,21 +33,21 @@ export default function CartDrawer() {
         <div
           style={{
             padding: '1.25rem 1.5rem',
-            borderBottom: '1px solid var(--border-light)',
+            borderBottom: '1px solid var(--color-border)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <ShoppingBag size={20} style={{ color: 'var(--primary-700)' }} />
+            <ShoppingBag size={20} style={{ color: 'var(--color-action-primary)' }} />
             <h2 style={{ fontSize: '1.25rem', fontWeight: 700 }}>
               Your Cart ({totalItems})
             </h2>
           </div>
           <button
             onClick={() => setIsCartOpen(false)}
-            style={{ color: 'var(--text-muted)', padding: '0.25rem' }}
+            style={{ color: 'var(--color-text-secondary)', padding: '0.25rem' }}
           >
             <X size={20} />
           </button>
@@ -57,14 +57,14 @@ export default function CartDrawer() {
         <div
           style={{
             padding: '0.85rem 1.5rem',
-            background: 'var(--primary-50)',
-            borderBottom: '1px solid var(--border-light)',
+            background: 'var(--primitive-green-100)',
+            borderBottom: '1px solid var(--color-border)',
           }}
         >
           <div
             style={{
               fontSize: '0.825rem',
-              color: 'var(--primary-900)',
+              color: 'var(--color-action-primary)',
               fontWeight: 600,
               marginBottom: '0.35rem',
             }}
@@ -77,7 +77,7 @@ export default function CartDrawer() {
             style={{
               width: '100%',
               height: '6px',
-              background: '#cbd5e1',
+              background: 'var(--color-border)',
               borderRadius: '9999px',
               overflow: 'hidden',
             }}
@@ -86,7 +86,7 @@ export default function CartDrawer() {
               style={{
                 width: `${progressPercent}%`,
                 height: '100%',
-                background: 'var(--primary-600)',
+                background: 'var(--color-action-primary)',
                 transition: 'width 0.3s ease',
               }}
             />
@@ -100,7 +100,7 @@ export default function CartDrawer() {
               style={{
                 textAlign: 'center',
                 padding: '3rem 1rem',
-                color: 'var(--text-muted)',
+                color: 'var(--color-text-secondary)',
               }}
             >
               <ShoppingBag size={48} style={{ margin: '0 auto 1rem', opacity: 0.3 }} />
@@ -119,8 +119,8 @@ export default function CartDrawer() {
                     gap: '1rem',
                     padding: '0.85rem',
                     borderRadius: 'var(--radius-md)',
-                    border: '1px solid var(--border-light)',
-                    background: 'var(--bg-card)',
+                    border: '1px solid var(--color-border)',
+                    background: 'var(--color-surface)',
                   }}
                 >
                   <img
@@ -137,7 +137,7 @@ export default function CartDrawer() {
                     <h4 style={{ fontSize: '0.925rem', fontWeight: 700 }}>
                       {product.name}
                     </h4>
-                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)' }}>
                       {formatCurrency(product.price)} / {product.unit}
                     </div>
 
@@ -153,7 +153,7 @@ export default function CartDrawer() {
                         style={{
                           display: 'flex',
                           alignItems: 'center',
-                          border: '1px solid var(--border-light)',
+                          border: '1px solid var(--color-border)',
                           borderRadius: 'var(--radius-sm)',
                           overflow: 'hidden',
                         }}
@@ -177,7 +177,7 @@ export default function CartDrawer() {
 
                       <button
                         onClick={() => removeFromCart(product.id)}
-                        style={{ color: '#ef4444', padding: '0.2rem' }}
+                        style={{ color: 'var(--color-error)', padding: '0.2rem' }}
                       >
                         <Trash2 size={16} />
                       </button>
@@ -194,8 +194,8 @@ export default function CartDrawer() {
           <div
             style={{
               padding: '1.25rem 1.5rem',
-              borderTop: '1px solid var(--border-light)',
-              background: 'var(--bg-body)',
+              borderTop: '1px solid var(--color-border)',
+              background: 'var(--color-surface-muted)',
             }}
           >
             <div
@@ -204,11 +204,11 @@ export default function CartDrawer() {
                 justifyContent: 'space-between',
                 marginBottom: '0.5rem',
                 fontSize: '0.9rem',
-                color: 'var(--text-muted)',
+                color: 'var(--color-text-secondary)',
               }}
             >
               <span>Subtotal</span>
-              <span style={{ fontWeight: 600, color: 'var(--text-main)' }}>
+              <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>
                 {formatCurrency(totalPrice)}
               </span>
             </div>
@@ -222,7 +222,7 @@ export default function CartDrawer() {
               }}
             >
               <span>Total</span>
-              <span style={{ color: 'var(--primary-800)' }}>
+              <span style={{ color: 'var(--color-action-primary)' }}>
                 {formatCurrency(totalPrice)}
               </span>
             </div>

@@ -1,48 +1,121 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
 
 :root {
-  /* Primary Agro Palette */
-  --primary-900: #064e3b;
-  --primary-800: #065f46;
-  --primary-700: #047857;
-  --primary-600: #059669;
-  --primary-500: #10b981;
-  --primary-100: #d1fae5;
-  --primary-50: #ecfdf5;
+  /* ==================================================
+     1. PRIMITIVE TOKENS
+     ================================================== */
+  --primitive-green-900: #1B5E20; /* Deepest green */
+  --primitive-green-800: #2E7D32; /* Primary / Deep Green */
+  --primitive-green-400: #66BB6A; /* Secondary / Fresh Green */
+  --primitive-green-100: #E8F5E9; /* Muted green for subtle backgrounds */
+  
+  --primitive-yellow-800: #F9A825; /* Accent / Golden Yellow */
+  --primitive-yellow-100: #FFF9C4; /* Muted accent */
+  
+  --primitive-cream-50: #F8FAF5; /* Soft Cream / Background */
+  
+  --primitive-charcoal-900: #263238; /* Foreground / Dark Charcoal */
+  --primitive-charcoal-700: #455A64; /* Text muted */
+  --primitive-charcoal-500: #78909C; /* Borders/Muted */
+  --primitive-charcoal-200: #B0BEC5; /* Light borders */
+  --primitive-charcoal-50:  #ECEFF1; /* Subtle surface */
+  
+  --primitive-success-600: #43A047; 
+  --primitive-error-600: #D32F2F;
+  --primitive-white: #FFFFFF;
+  
+  --primitive-glass-bg: rgba(255, 255, 255, 0.85);
+  --primitive-glass-border: rgba(255, 255, 255, 0.3);
 
-  /* Accent Gold / Harvest */
-  --accent-gold: #f59e0b;
-  --accent-gold-hover: #d97706;
-  --accent-soft: #fef3c7;
+  /* ==================================================
+     2. SEMANTIC TOKENS (LIGHT THEME)
+     ================================================== */
+  --color-background: var(--primitive-cream-50);
+  --color-surface: var(--primitive-white);
+  --color-surface-muted: var(--primitive-charcoal-50);
 
-  /* Neutral Dark / Light Spectrum */
-  --bg-dark: #0f172a;
-  --bg-surface-dark: #1e293b;
-  --bg-body: #f8fafc;
-  --bg-card: #ffffff;
-  --text-main: #0f172a;
-  --text-muted: #64748b;
-  --text-light: #94a3b8;
-  --border-light: #e2e8f0;
-  --border-subtle: #f1f5f9;
+  --color-text-primary: var(--primitive-charcoal-900);
+  --color-text-secondary: var(--primitive-charcoal-700);
+  --color-text-inverse: var(--primitive-white);
 
-  /* Elevation Shadows & Glass */
+  --color-border: var(--primitive-charcoal-200);
+  --color-border-subtle: rgba(38, 50, 56, 0.1);
+
+  --color-action-primary: var(--primitive-green-800);
+  --color-action-primary-hover: var(--primitive-green-900);
+  --color-action-secondary: var(--primitive-white);
+  --color-action-secondary-border: var(--primitive-charcoal-200);
+
+  --color-accent: var(--primitive-yellow-800);
+  
+  --color-success: var(--primitive-success-600);
+  --color-error: var(--primitive-error-600);
+
+  --color-glass-bg: var(--primitive-glass-bg);
+  --color-glass-border: var(--primitive-glass-border);
+
+  /* ==================================================
+     3. COMPONENT TOKENS
+     ================================================== */
+  /* Buttons */
+  --button-primary-bg: var(--color-action-primary);
+  --button-primary-bg-hover: var(--color-action-primary-hover);
+  --button-primary-text: var(--color-text-inverse);
+  --button-secondary-bg: var(--color-action-secondary);
+  --button-secondary-border: var(--color-action-secondary-border);
+  --button-secondary-text: var(--color-text-primary);
+  --button-secondary-bg-hover: var(--color-surface-muted);
+
+  /* Cards */
+  --card-background: var(--color-surface);
+  --card-border: var(--color-border);
+  --card-hover-border: var(--color-action-primary);
+  
+  /* Inputs */
+  --input-background: var(--color-surface);
+  --input-border: var(--color-border);
+  --input-border-focus: var(--color-action-primary);
+
+  /* Navbar */
+  --navbar-background: var(--color-glass-bg);
+  --navbar-border: var(--color-border);
+
+  /* Miscellaneous */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
   --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-  --glass-bg: rgba(255, 255, 255, 0.85);
-  --glass-border: rgba(255, 255, 255, 0.3);
-
-  /* Radius */
   --radius-sm: 0.375rem;
   --radius-md: 0.625rem;
   --radius-lg: 1rem;
   --radius-full: 9999px;
-
-  /* Layout */
   --max-width: 1280px;
 }
+
+/* 
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-background: var(--primitive-charcoal-900);
+    --color-surface: #1e293b;
+    --color-surface-muted: #334155;
+    
+    --color-text-primary: var(--primitive-white);
+    --color-text-secondary: var(--primitive-charcoal-200);
+    --color-text-inverse: var(--primitive-charcoal-900);
+    
+    --color-border: #334155;
+    --color-border-subtle: rgba(255, 255, 255, 0.1);
+    
+    --color-action-primary: var(--primitive-green-400);
+    --color-action-primary-hover: var(--primitive-green-100);
+    --color-action-secondary: #334155;
+    --color-action-secondary-border: #475569;
+    
+    --color-glass-bg: rgba(30, 41, 59, 0.85);
+    --color-glass-border: rgba(255, 255, 255, 0.1);
+  }
+}
+*/
 
 * {
   box-sizing: border-box;
@@ -52,15 +125,15 @@
 
 html, body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  background-color: var(--bg-body);
-  color: var(--text-main);
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Plus Jakarta Sans', sans-serif;
-  color: var(--text-main);
+  color: var(--color-text-primary);
 }
 
 a {
@@ -87,10 +160,10 @@ button {
   position: sticky;
   top: 0;
   z-index: 50;
-  background: var(--glass-bg);
+  background: var(--navbar-background);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--navbar-border);
   transition: all 0.3s ease;
 }
 
@@ -108,19 +181,19 @@ button {
   gap: 0.6rem;
   font-size: 1.5rem;
   font-weight: 800;
-  color: var(--primary-800);
+  color: var(--color-action-primary);
 }
 
 .agrox-brand-icon {
   width: 2.25rem;
   height: 2.25rem;
-  background: linear-gradient(135deg, var(--primary-600), var(--primary-800));
-  color: white;
+  background: linear-gradient(135deg, var(--color-action-primary-hover), var(--color-action-primary));
+  color: var(--primitive-white);
   border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 10px rgba(5, 150, 105, 0.3);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 /* Search Bar */
@@ -136,23 +209,24 @@ button {
   width: 100%;
   padding: 0.65rem 1rem 0.65rem 2.75rem;
   border-radius: var(--radius-full);
-  border: 1px solid var(--border-light);
-  background: var(--bg-card);
+  border: 1px solid var(--input-border);
+  background: var(--input-background);
   font-size: 0.925rem;
   transition: all 0.2s ease;
   box-shadow: var(--shadow-sm);
+  color: var(--color-text-primary);
 }
 
 .agrox-search-input:focus {
   outline: none;
-  border-color: var(--primary-600);
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+  border-color: var(--input-border-focus);
+  box-shadow: 0 0 0 3px var(--color-border-subtle);
 }
 
 .agrox-search-icon {
   position: absolute;
   left: 0.9rem;
-  color: var(--text-light);
+  color: var(--color-text-secondary);
   pointer-events: none;
 }
 
@@ -176,50 +250,50 @@ button {
 }
 
 .agrox-btn-primary {
-  background: linear-gradient(135deg, var(--primary-700), var(--primary-800));
-  color: white;
-  box-shadow: 0 4px 12px rgba(4, 120, 87, 0.25);
+  background: var(--button-primary-bg);
+  color: var(--button-primary-text);
+  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.25);
 }
 
 .agrox-btn-primary:hover {
-  background: linear-gradient(135deg, var(--primary-800), var(--primary-900));
+  background: var(--button-primary-bg-hover);
   transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(4, 120, 87, 0.35);
+  box-shadow: 0 6px 16px rgba(46, 125, 50, 0.35);
 }
 
 .agrox-btn-outline {
-  border: 1px solid var(--border-light);
-  background: white;
-  color: var(--text-main);
+  border: 1px solid var(--button-secondary-border);
+  background: var(--button-secondary-bg);
+  color: var(--button-secondary-text);
 }
 
 .agrox-btn-outline:hover {
-  background: var(--border-subtle);
-  border-color: var(--text-light);
+  background: var(--button-secondary-bg-hover);
+  border-color: var(--color-border);
 }
 
 .agrox-cart-trigger {
   position: relative;
   padding: 0.6rem;
   border-radius: var(--radius-full);
-  background: var(--bg-card);
-  border: 1px solid var(--border-light);
-  color: var(--text-main);
+  background: var(--card-background);
+  border: 1px solid var(--card-border);
+  color: var(--color-text-primary);
   transition: all 0.2s ease;
 }
 
 .agrox-cart-trigger:hover {
-  background: var(--primary-50);
-  border-color: var(--primary-500);
-  color: var(--primary-800);
+  background: var(--color-surface-muted);
+  border-color: var(--color-action-primary);
+  color: var(--color-action-primary);
 }
 
 .agrox-cart-badge {
   position: absolute;
   top: -4px;
   right: -4px;
-  background: var(--accent-gold);
-  color: white;
+  background: var(--color-accent);
+  color: var(--primitive-white);
   font-size: 0.75rem;
   font-weight: 700;
   min-width: 1.25rem;
@@ -234,8 +308,8 @@ button {
 
 /* Category Strip */
 .agrox-category-strip {
-  background: var(--primary-900);
-  color: white;
+  background: var(--primitive-green-900);
+  color: var(--primitive-white);
   overflow-x: auto;
   white-space: nowrap;
 }
@@ -265,8 +339,8 @@ button {
 
 /* Hero Banner */
 .agrox-hero {
-  background: linear-gradient(135deg, #064e3b 0%, #047857 50%, #065f46 100%);
-  color: white;
+  background: linear-gradient(135deg, var(--primitive-green-900) 0%, var(--primitive-green-800) 50%, var(--primitive-green-900) 100%);
+  color: var(--primitive-white);
   padding: 4rem 1.25rem;
   border-radius: var(--radius-lg);
   margin: 1.5rem auto;
@@ -296,7 +370,7 @@ button {
   font-size: 3rem;
   font-weight: 800;
   line-height: 1.15;
-  color: white;
+  color: var(--primitive-white);
   margin-bottom: 1rem;
 }
 
@@ -321,9 +395,9 @@ button {
 }
 
 .agrox-card {
-  background: var(--bg-card);
+  background: var(--card-background);
   border-radius: var(--radius-lg);
-  border: 1px solid var(--border-light);
+  border: 1px solid var(--card-border);
   overflow: hidden;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
@@ -340,7 +414,7 @@ button {
   position: relative;
   width: 100%;
   height: 200px;
-  background: #f1f5f9;
+  background: var(--color-surface-muted);
   overflow: hidden;
 }
 
@@ -359,8 +433,8 @@ button {
   position: absolute;
   top: 0.75rem;
   left: 0.75rem;
-  background: rgba(6, 78, 59, 0.85);
-  color: white;
+  background: rgba(27, 94, 32, 0.85); /* primitive green-900 with opacity */
+  color: var(--primitive-white);
   backdrop-filter: blur(4px);
   font-size: 0.75rem;
   font-weight: 600;
@@ -379,21 +453,21 @@ button {
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
-  color: var(--primary-700);
+  color: var(--color-action-primary);
   margin-bottom: 0.35rem;
 }
 
 .agrox-card-title {
   font-size: 1.1rem;
   font-weight: 700;
-  color: var(--text-main);
+  color: var(--color-text-primary);
   margin-bottom: 0.5rem;
   line-height: 1.35;
 }
 
 .agrox-card-seller {
   font-size: 0.825rem;
-  color: var(--text-muted);
+  color: var(--color-text-secondary);
   display: flex;
   align-items: center;
   gap: 0.35rem;
@@ -406,18 +480,18 @@ button {
   align-items: center;
   justify-content: space-between;
   padding-top: 0.75rem;
-  border-top: 1px solid var(--border-subtle);
+  border-top: 1px solid var(--color-border-subtle);
 }
 
 .agrox-price {
   font-size: 1.25rem;
   font-weight: 800;
-  color: var(--primary-900);
+  color: var(--color-action-primary-hover);
 }
 
 .agrox-unit {
   font-size: 0.8rem;
-  color: var(--text-muted);
+  color: var(--color-text-secondary);
   font-weight: 400;
 }
 
@@ -425,7 +499,7 @@ button {
 .agrox-drawer-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.5);
+  background: rgba(0, 0, 0, 0.5); /* overlay */
   backdrop-filter: blur(4px);
   z-index: 100;
   animation: fadeIn 0.2s ease;
@@ -438,7 +512,7 @@ button {
   bottom: 0;
   width: 100%;
   max-width: 440px;
-  background: white;
+  background: var(--color-surface);
   z-index: 101;
   box-shadow: -10px 0 30px rgba(0, 0, 0, 0.15);
   display: flex;
@@ -461,8 +535,8 @@ button {
   position: fixed;
   bottom: 2rem;
   right: 2rem;
-  background: var(--bg-dark);
-  color: white;
+  background: var(--color-text-primary);
+  color: var(--color-text-inverse);
   padding: 0.85rem 1.5rem;
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-xl);
@@ -471,7 +545,7 @@ button {
   align-items: center;
   gap: 0.75rem;
   animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  border-left: 4px solid var(--primary-500);
+  border-left: 4px solid var(--color-success);
 }
 
 @keyframes slideUp {

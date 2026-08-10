@@ -8,6 +8,9 @@ export const metadata: Metadata = {
   title: 'AgroX - Agricultural E-Commerce & Farm Produce Marketplace',
   description: 'Direct B2B and B2C agricultural marketplace connecting certified farmers, grain suppliers, and buyers.',
   keywords: ['agriculture', 'fresh produce', 'maize', 'fertilizer', 'farming machinery', 'farm to table', 'AgroX'],
+  icons: {
+    icon: '/favicon-agrox.webp',
+  }
 };
 
 export default function RootLayout({

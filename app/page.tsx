@@ -66,7 +66,7 @@ export default function HomePage() {
               <h2 style={{ fontSize: '1.75rem', fontWeight: 800 }}>
                 {selectedCategory === 'All' ? 'Featured Agricultural Catalog' : selectedCategory}
               </h2>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+              <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem' }}>
                 Showing {filteredProducts.length} verified produce & farming supplies
               </p>
             </div>
@@ -87,7 +87,7 @@ export default function HomePage() {
                   type="checkbox"
                   checked={organicOnly}
                   onChange={(e) => setOrganicOnly(e.target.checked)}
-                  style={{ accentColor: 'var(--primary-600)', width: '16px', height: '16px' }}
+                  style={{ accentColor: 'var(--color-success)', width: '16px', height: '16px' }}
                 />
                 <span style={{ fontWeight: 600 }}>🌿 100% Organic Only</span>
               </label>
@@ -100,14 +100,14 @@ export default function HomePage() {
               style={{
                 textAlign: 'center',
                 padding: '4rem 1rem',
-                background: 'white',
+                background: 'var(--color-surface)',
                 borderRadius: 'var(--radius-lg)',
-                border: '1px solid var(--border-light)',
+                border: '1px solid var(--color-border)',
               }}
             >
               <Filter size={48} style={{ margin: '0 auto 1rem', opacity: 0.3 }} />
               <h3 style={{ fontSize: '1.25rem', fontWeight: 700 }}>No products found</h3>
-              <p style={{ color: 'var(--text-muted)', marginTop: '0.5rem' }}>
+              <p style={{ color: 'var(--color-text-secondary)', marginTop: '0.5rem' }}>
                 Try adjusting your search query or category filters.
               </p>
             </div>

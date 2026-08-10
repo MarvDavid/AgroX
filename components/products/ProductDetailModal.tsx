@@ -33,7 +33,7 @@ export default function ProductDetailModal({ product, onClose }: ProductDetailMo
           width: '90%',
           maxWidth: '800px',
           maxHeight: '90vh',
-          background: 'white',
+          background: 'var(--color-surface)',
           borderRadius: 'var(--radius-lg)',
           boxShadow: 'var(--shadow-xl)',
           zIndex: 111,
@@ -47,10 +47,10 @@ export default function ProductDetailModal({ product, onClose }: ProductDetailMo
             position: 'absolute',
             top: '1rem',
             right: '1rem',
-            background: 'var(--bg-body)',
+            background: 'var(--color-surface-muted)',
             borderRadius: '9999px',
             padding: '0.5rem',
-            color: 'var(--text-muted)',
+            color: 'var(--color-text-secondary)',
           }}
         >
           <X size={20} />
@@ -83,26 +83,26 @@ export default function ProductDetailModal({ product, onClose }: ProductDetailMo
             </h2>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', color: 'var(--accent-gold)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', color: 'var(--color-accent)' }}>
                 <Star size={16} fill="currentColor" />
-                <span style={{ fontWeight: 700, marginLeft: '0.25rem', color: 'var(--text-main)' }}>
+                <span style={{ fontWeight: 700, marginLeft: '0.25rem', color: 'var(--color-text-primary)' }}>
                   {product.rating}
                 </span>
               </div>
-              <span style={{ color: 'var(--text-light)' }}>|</span>
-              <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+              <span style={{ color: 'var(--color-border)' }}>|</span>
+              <span style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)' }}>
                 {product.reviewsCount} Customer Reviews
               </span>
             </div>
 
-            <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--primary-900)', marginBottom: '1rem' }}>
+            <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--color-action-primary)', marginBottom: '1rem' }}>
               {formatCurrency(product.price)}{' '}
-              <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)', fontWeight: 400 }}>
+              <span style={{ fontSize: '0.9rem', color: 'var(--color-text-secondary)', fontWeight: 400 }}>
                 / {product.unit}
               </span>
             </div>
 
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.925rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
+            <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.925rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
               {product.description}
             </p>
 
@@ -111,19 +111,19 @@ export default function ProductDetailModal({ product, onClose }: ProductDetailMo
               style={{
                 padding: '1rem',
                 borderRadius: 'var(--radius-md)',
-                background: 'var(--bg-body)',
-                border: '1px solid var(--border-light)',
+                background: 'var(--color-surface-muted)',
+                border: '1px solid var(--color-border)',
                 marginBottom: '1.5rem',
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 700 }}>
-                <ShieldCheck size={18} style={{ color: 'var(--primary-600)' }} />
+                <ShieldCheck size={18} style={{ color: 'var(--color-success)' }} />
                 <span>{product.seller.name}</span>
                 {product.seller.verified && (
                   <span
                     style={{
-                      background: 'var(--primary-100)',
-                      color: 'var(--primary-800)',
+                      background: 'var(--primitive-green-100)',
+                      color: 'var(--primitive-green-900)',
                       fontSize: '0.7rem',
                       padding: '0.15rem 0.4rem',
                       borderRadius: 'var(--radius-sm)',
@@ -133,7 +133,7 @@ export default function ProductDetailModal({ product, onClose }: ProductDetailMo
                   </span>
                 )}
               </div>
-              <div style={{ fontSize: '0.825rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
+              <div style={{ fontSize: '0.825rem', color: 'var(--color-text-secondary)', marginTop: '0.25rem' }}>
                 <MapPin size={12} style={{ display: 'inline', marginRight: '4px' }} />
                 {product.seller.location}
               </div>

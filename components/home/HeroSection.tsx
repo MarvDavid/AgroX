@@ -23,10 +23,10 @@ export default function HeroSection() {
             </p>
 
             <div className="agrox-hero-cta">
-              <a href="#products" className="agrox-btn" style={{ background: '#f59e0b', color: '#0f172a' }}>
+              <a href="#products" className="agrox-btn" style={{ background: 'var(--color-accent)', color: 'var(--primitive-charcoal-900)' }}>
                 Browse Catalog <ArrowRight size={18} />
               </a>
-              <Link href="/seller" className="agrox-btn agrox-btn-outline" style={{ background: 'rgba(255,255,255,0.1)', color: 'white', borderColor: 'rgba(255,255,255,0.3)' }}>
+              <Link href="/seller" className="agrox-btn agrox-btn-outline" style={{ background: 'rgba(255,255,255,0.1)', color: 'var(--primitive-white)', borderColor: 'rgba(255,255,255,0.3)' }}>
                 Sell Produce
               </Link>
             </div>
@@ -38,7 +38,7 @@ export default function HeroSection() {
                 gap: '2rem',
                 marginTop: '2.5rem',
                 paddingTop: '1.5rem',
-                borderTop: '1px solid rgba(255, 255, 255, 0.2)',
+                borderTop: '1px solid var(--color-glass-border)',
               }}
             >
               <div>
@@ -62,8 +62,8 @@ export default function HeroSection() {
               alt="Golden Wheat & Farm Field"
               style={{
                 width: '100%',
-                borderRadius: '1rem',
-                boxShadow: '0 20px 30px rgba(0,0,0,0.3)',
+                borderRadius: 'var(--radius-lg)',
+                boxShadow: 'var(--shadow-xl)',
                 objectFit: 'cover',
                 maxHeight: '380px',
               }}

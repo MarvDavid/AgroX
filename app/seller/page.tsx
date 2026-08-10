@@ -34,8 +34,8 @@ export default function SellerPortalPage() {
             <span
               style={{
                 display: 'inline-block',
-                background: 'var(--primary-100)',
-                color: 'var(--primary-800)',
+                background: 'var(--primitive-green-100)',
+                color: 'var(--primitive-green-900)',
                 padding: '0.35rem 0.85rem',
                 borderRadius: '9999px',
                 fontSize: '0.85rem',
@@ -48,7 +48,7 @@ export default function SellerPortalPage() {
             <h1 style={{ fontSize: '2.25rem', fontWeight: 800 }}>
               List Your Produce Direct to Verified Buyers
             </h1>
-            <p style={{ color: 'var(--text-muted)', maxWidth: '600px', margin: '0.5rem auto 0' }}>
+            <p style={{ color: 'var(--color-text-secondary)', maxWidth: '600px', margin: '0.5rem auto 0' }}>
               Eliminate middlemen, secure guaranteed prices, and enjoy escrow protected transactions.
             </p>
           </div>
@@ -59,16 +59,16 @@ export default function SellerPortalPage() {
                 maxWidth: '600px',
                 margin: '3rem auto',
                 padding: '3rem 2rem',
-                background: 'white',
+                background: 'var(--color-surface)',
                 borderRadius: 'var(--radius-lg)',
-                border: '1px solid var(--border-light)',
+                border: '1px solid var(--color-border)',
                 textAlign: 'center',
                 boxShadow: 'var(--shadow-lg)',
               }}
             >
-              <CheckCircle2 size={56} style={{ color: 'var(--primary-600)', margin: '0 auto 1rem' }} />
+              <CheckCircle2 size={56} style={{ color: 'var(--color-success)', margin: '0 auto 1rem' }} />
               <h2 style={{ fontSize: '1.5rem', fontWeight: 800 }}>Listing Submitted for Verification!</h2>
-              <p style={{ color: 'var(--text-muted)', margin: '0.75rem 0 1.5rem' }}>
+              <p style={{ color: 'var(--color-text-secondary)', margin: '0.75rem 0 1.5rem' }}>
                 Our agricultural field agents will verify your produce batch within 4 hours.
               </p>
               <Link href="/" className="agrox-btn agrox-btn-primary">
@@ -80,15 +80,15 @@ export default function SellerPortalPage() {
               style={{
                 maxWidth: '700px',
                 margin: '0 auto',
-                background: 'white',
+                background: 'var(--color-surface)',
                 padding: '2.5rem',
                 borderRadius: 'var(--radius-lg)',
-                border: '1px solid var(--border-light)',
+                border: '1px solid var(--color-border)',
                 boxShadow: 'var(--shadow-md)',
               }}
             >
               <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                <h3 style={{ fontSize: '1.25rem', fontWeight: 700, borderBottom: '1px solid var(--border-light)', paddingBottom: '0.75rem' }}>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 700, borderBottom: '1px solid var(--color-border)', paddingBottom: '0.75rem' }}>
                   Product Listing Details
                 </h3>
 

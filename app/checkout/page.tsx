@@ -37,26 +37,26 @@ export default function CheckoutPage() {
               textAlign: 'center',
               padding: '3.5rem 2rem',
               maxWidth: '550px',
-              background: 'white',
+              background: 'var(--color-surface)',
               borderRadius: 'var(--radius-lg)',
-              border: '1px solid var(--border-light)',
+              border: '1px solid var(--color-border)',
               boxShadow: 'var(--shadow-xl)',
               margin: '2rem',
             }}
           >
-            <CheckCircle2 size={64} style={{ color: 'var(--primary-600)', margin: '0 auto 1rem' }} />
+            <CheckCircle2 size={64} style={{ color: 'var(--color-success)', margin: '0 auto 1rem' }} />
             <h1 style={{ fontSize: '2rem', fontWeight: 800 }}>Order Confirmed & Escrow Secured!</h1>
-            <p style={{ color: 'var(--text-muted)', margin: '1rem 0 1.5rem', lineHeight: 1.6 }}>
+            <p style={{ color: 'var(--color-text-secondary)', margin: '1rem 0 1.5rem', lineHeight: 1.6 }}>
               Your order payment is securely held in AgroX Escrow until freight inspection & delivery confirmation.
             </p>
             <div
               style={{
-                background: 'var(--primary-50)',
+                background: 'var(--primitive-green-100)',
                 padding: '1rem',
                 borderRadius: 'var(--radius-md)',
                 fontSize: '0.875rem',
                 fontWeight: 600,
-                color: 'var(--primary-900)',
+                color: 'var(--primitive-green-900)',
                 marginBottom: '2rem',
               }}
             >
@@ -84,7 +84,7 @@ export default function CheckoutPage() {
               display: 'inline-flex',
               alignItems: 'center',
               gap: '0.5rem',
-              color: 'var(--text-muted)',
+              color: 'var(--color-text-secondary)',
               fontSize: '0.9rem',
               marginBottom: '1.5rem',
               fontWeight: 500,
@@ -98,7 +98,7 @@ export default function CheckoutPage() {
           </h1>
 
           {cart.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '3rem 1rem', background: 'white', borderRadius: 'var(--radius-lg)' }}>
+            <div style={{ textAlign: 'center', padding: '3rem 1rem', background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)' }}>
               <p style={{ fontSize: '1.1rem', fontWeight: 600 }}>Your cart is empty.</p>
               <Link href="/" className="agrox-btn agrox-btn-primary" style={{ marginTop: '1rem' }}>
                 Browse Catalog
@@ -116,16 +116,16 @@ export default function CheckoutPage() {
               <form
                 onSubmit={handlePlaceOrder}
                 style={{
-                  background: 'white',
+                  background: 'var(--color-surface)',
                   padding: '2rem',
                   borderRadius: 'var(--radius-lg)',
-                  border: '1px solid var(--border-light)',
+                  border: '1px solid var(--color-border)',
                   display: 'flex',
                   flexDirection: 'column',
                   gap: '1.25rem',
                 }}
               >
-                <h3 style={{ fontSize: '1.2rem', fontWeight: 700, borderBottom: '1px solid var(--border-light)', paddingBottom: '0.75rem' }}>
+                <h3 style={{ fontSize: '1.2rem', fontWeight: 700, borderBottom: '1px solid var(--color-border)', paddingBottom: '0.75rem' }}>
                   Shipping & Delivery Address
                 </h3>
 
@@ -186,7 +186,7 @@ export default function CheckoutPage() {
                   />
                 </div>
 
-                <h3 style={{ fontSize: '1.2rem', fontWeight: 700, borderBottom: '1px solid var(--border-light)', paddingBottom: '0.75rem', marginTop: '1rem' }}>
+                <h3 style={{ fontSize: '1.2rem', fontWeight: 700, borderBottom: '1px solid var(--color-border)', paddingBottom: '0.75rem', marginTop: '1rem' }}>
                   Select Escrow Payment Option
                 </h3>
 
@@ -194,19 +194,19 @@ export default function CheckoutPage() {
                   style={{
                     padding: '1rem',
                     borderRadius: 'var(--radius-md)',
-                    border: '2px solid var(--primary-600)',
-                    background: 'var(--primary-50)',
+                    border: '2px solid var(--color-action-primary)',
+                    background: 'var(--color-surface-muted)',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '1rem',
                   }}
                 >
-                  <ShieldCheck size={28} style={{ color: 'var(--primary-700)' }} />
+                  <ShieldCheck size={28} style={{ color: 'var(--color-action-primary)' }} />
                   <div>
-                    <div style={{ fontWeight: 700, color: 'var(--primary-900)' }}>
+                    <div style={{ fontWeight: 700, color: 'var(--color-text-primary)' }}>
                       AgroX Buyer Protection Escrow
                     </div>
-                    <div style={{ fontSize: '0.8rem', color: 'var(--primary-800)' }}>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)' }}>
                       Funds released to farmer only after produce arrival & quality check.
                     </div>
                   </div>
@@ -225,10 +225,10 @@ export default function CheckoutPage() {
               <div>
                 <div
                   style={{
-                    background: 'white',
+                    background: 'var(--color-surface)',
                     padding: '1.75rem',
                     borderRadius: 'var(--radius-lg)',
-                    border: '1px solid var(--border-light)',
+                    border: '1px solid var(--color-border)',
                     position: 'sticky',
                     top: '6rem',
                   }}
@@ -242,7 +242,7 @@ export default function CheckoutPage() {
                       <div key={product.id} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
                         <div>
                           <span style={{ fontWeight: 600 }}>{product.name}</span>
-                          <span style={{ color: 'var(--text-muted)', display: 'block', fontSize: '0.8rem' }}>
+                          <span style={{ color: 'var(--color-text-secondary)', display: 'block', fontSize: '0.8rem' }}>
                             Qty: {quantity} ({formatCurrency(product.price)} / {product.unit})
                           </span>
                         </div>
@@ -253,14 +253,14 @@ export default function CheckoutPage() {
                     ))}
                   </div>
 
-                  <div style={{ borderTop: '1px solid var(--border-light)', paddingTop: '1rem' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', color: 'var(--text-muted)' }}>
+                  <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: '1rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', color: 'var(--color-text-secondary)' }}>
                       <span>Freight & Logistics</span>
-                      <span style={{ color: 'var(--primary-700)', fontWeight: 600 }}>FREE</span>
+                      <span style={{ color: 'var(--color-action-primary)', fontWeight: 600 }}>FREE</span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.25rem', fontWeight: 800, marginTop: '0.5rem' }}>
                       <span>Total Amount</span>
-                      <span style={{ color: 'var(--primary-800)' }}>{formatCurrency(totalPrice)}</span>
+                      <span style={{ color: 'var(--color-action-primary)' }}>{formatCurrency(totalPrice)}</span>
                     </div>
                   </div>
                 </div>
