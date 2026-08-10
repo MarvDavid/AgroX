@@ -142,6 +142,145 @@ export const MOCK_PRODUCTS: Product[] = [
     isOrganic: false,
     featured: false,
     tags: ['Poultry', 'Feed', 'Livestock']
+  },
+  {
+    id: 'ag-7',
+    name: 'Organic Green Cabbages',
+    category: 'Fresh Produce',
+    price: 12.50,
+    unit: 'bag (10kg)',
+    rating: 4.8,
+    reviewsCount: 156,
+    image: 'https://images.unsplash.com/photo-1595841696250-96f0e4b854e4?auto=format&fit=crop&q=80&w=800',
+    description: 'Freshly harvested organic green cabbages. Crisp, large heads perfect for retail and culinary processing.',
+    seller: {
+      id: 's-102',
+      name: 'GreenField Produce Co.',
+      location: 'Plateau State, Nigeria',
+      verified: true,
+      rating: 4.8
+    },
+    inStock: true,
+    stockCount: 85,
+    isOrganic: true,
+    featured: false,
+    tags: ['Cabbage', 'Fresh', 'Vegetable', 'Organic']
+  },
+  {
+    id: 'ag-8',
+    name: 'Premium Long-Grain Parboiled Rice',
+    category: 'Grains & Cereals',
+    price: 68.00,
+    originalPrice: 72.00,
+    unit: 'bag (50kg)',
+    rating: 4.9,
+    reviewsCount: 312,
+    image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&q=80&w=800',
+    description: 'Stone-free, well-milled long-grain parboiled rice. High nutritional value with excellent cooking quality.',
+    seller: {
+      id: 's-107',
+      name: 'Savanna Rice Mills',
+      location: 'Niger State, Nigeria',
+      verified: true,
+      rating: 4.9
+    },
+    inStock: true,
+    stockCount: 600,
+    isOrganic: false,
+    featured: true,
+    tags: ['Rice', 'Grain', 'Parboiled']
+  },
+  {
+    id: 'ag-9',
+    name: 'Cassava Stems (TME 419 Variant)',
+    category: 'Seeds & Seedlings',
+    price: 8.50,
+    unit: 'bundle (50 stems)',
+    rating: 4.6,
+    reviewsCount: 94,
+    image: 'https://images.unsplash.com/photo-1515150144380-bca9f1650ed9?auto=format&fit=crop&q=80&w=800',
+    description: 'High-yielding, disease-resistant cassava stems (TME 419). Fast maturation within 9-10 months, ideal for commercial starch processing.',
+    seller: {
+      id: 's-108',
+      name: 'RootTech Farm Hub',
+      location: 'Edo State, Nigeria',
+      verified: true,
+      rating: 4.7
+    },
+    inStock: true,
+    stockCount: 1200,
+    isOrganic: false,
+    featured: false,
+    tags: ['Cassava', 'Stems', 'Seedlings', 'Tubers']
+  },
+  {
+    id: 'ag-10',
+    name: 'Liquid Organic Foliar Fertilizer',
+    category: 'Fertilizers & Soil',
+    price: 25.00,
+    unit: 'bottle (5L)',
+    rating: 4.7,
+    reviewsCount: 188,
+    image: 'https://images.unsplash.com/photo-1591590483842-1264c74f51be?auto=format&fit=crop&q=80&w=800',
+    description: 'Fast-absorbing organic foliar spray loaded with micronutrients to correct deficiencies and boost crop immunity.',
+    seller: {
+      id: 's-104',
+      name: 'TerraNutri Agri Supplies',
+      location: 'Kano, Nigeria',
+      verified: true,
+      rating: 4.7
+    },
+    inStock: true,
+    stockCount: 240,
+    isOrganic: true,
+    featured: false,
+    tags: ['Fertilizer', 'Organic', 'Foliar', 'Liquid']
+  },
+  {
+    id: 'ag-11',
+    name: 'Heavy-Duty Farm Tractor (4WD)',
+    category: 'Farm Equipment',
+    price: 24500.00,
+    unit: 'unit',
+    rating: 5.0,
+    reviewsCount: 12,
+    image: 'https://images.unsplash.com/photo-1592982537443-d1e1f1c711aa?auto=format&fit=crop&q=80&w=800',
+    description: 'Durable 75HP 4-wheel drive agricultural tractor. Capable of handling heavy implements like ploughs, harrows, and trailers.',
+    seller: {
+      id: 's-105',
+      name: 'Mechanized Agri Hardware',
+      location: 'Lagos, Nigeria',
+      verified: true,
+      rating: 4.9
+    },
+    inStock: true,
+    stockCount: 4,
+    isOrganic: false,
+    featured: true,
+    tags: ['Tractor', 'Machinery', 'Heavy Duty']
+  },
+  {
+    id: 'ag-12',
+    name: 'Day-Old Broiler Chicks',
+    category: 'Livestock & Poultry',
+    price: 45.00,
+    unit: 'carton (50 chicks)',
+    rating: 4.9,
+    reviewsCount: 420,
+    image: 'https://images.unsplash.com/photo-1548550023-2bf3c49b40d6?auto=format&fit=crop&q=80&w=800',
+    description: 'Healthy, vaccinated day-old broiler chicks from premium parent stock. Excellent feed conversion ratio and rapid growth rate.',
+    seller: {
+      id: 's-109',
+      name: 'Sunrise Hatcheries',
+      location: 'Oyo State, Nigeria',
+      verified: true,
+      rating: 4.85
+    },
+    inStock: true,
+    stockCount: 150,
+    isOrganic: false,
+    featured: true,
+    tags: ['Poultry', 'Chicks', 'Livestock', 'Broilers']
   }
 ];
 

@@ -479,6 +479,33 @@ button {
   to { transform: translateY(0); opacity: 1; }
 }
 
+/* Marquee */
+.agrox-marquee {
+  width: 100%;
+  max-width: 400px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+  white-space: nowrap;
+  -webkit-mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+  mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+}
+
+.agrox-marquee-track {
+  display: inline-block;
+  padding: 0.35rem 0.85rem;
+  padding-left: 100%;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  animation: scrollText 12s linear infinite;
+}
+
+@keyframes scrollText {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
+
 /* Responsive queries */
 @media (max-width: 768px) {
   .agrox-hero-grid {

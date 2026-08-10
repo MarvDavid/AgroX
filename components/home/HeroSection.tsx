@@ -10,21 +10,11 @@ export default function HeroSection() {
       <div className="agrox-hero">
         <div className="agrox-hero-grid">
           <div>
-            <span
-              style={{
-                display: 'inline-block',
-                background: 'rgba(255, 255, 255, 0.15)',
-                padding: '0.35rem 0.85rem',
-                borderRadius: '9999px',
-                fontSize: '0.85rem',
-                fontWeight: 600,
-                marginBottom: '1rem',
-                letterSpacing: '0.05em',
-                textTransform: 'uppercase',
-              }}
-            >
-              🌾 Direct Farm-to-Buyer Marketplace
-            </span>
+            <div className="agrox-marquee">
+              <div className="agrox-marquee-track">
+                🌾 Direct Farm-to-Buyer Marketplace &nbsp;&bull;&nbsp; Fresh Agro Produce & Machinery
+              </div>
+            </div>
             <h1 className="agrox-hero-title">
               Fresh Agro Produce & Machinery directly from Source.
             </h1>
