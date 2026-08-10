@@ -27,7 +27,7 @@ export default function Navbar({
         <div className="agrox-nav-wrapper">
           {/* Logo */}
           <Link href="/" className="agrox-brand">
-            <img src="/header-logo-agroX.webp" alt="AgroX Logo" style={{ height: '50px', width: 'auto' }} />
+            <img src="/header-logo-agroX.webp" alt="AgroX Logo" style={{ height: '36px', width: 'auto' }} />
           </Link>
 
           {/* Search bar */}
@@ -56,8 +56,9 @@ export default function Navbar({
               className="agrox-cart-trigger"
               onClick={() => setIsCartOpen(true)}
               aria-label="Open Cart"
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0.625rem', borderRadius: 'var(--radius-md)', background: 'var(--color-surface-muted)', position: 'relative' }}
             >
-              <ShoppingBag size={22} />
+              <ShoppingBag size={20} />
               {totalItems > 0 && (
                 <span className="agrox-cart-badge">{totalItems}</span>
               )}

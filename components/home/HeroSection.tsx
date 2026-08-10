@@ -36,7 +36,7 @@ export default function HeroSection() {
               style={{
                 display: 'flex',
                 gap: '2rem',
-                marginTop: '2.5rem',
+                marginTop: '1.5rem',
                 paddingTop: '1.5rem',
                 borderTop: '1px solid var(--color-glass-border)',
               }}
@@ -65,7 +65,7 @@ export default function HeroSection() {
                 borderRadius: 'var(--radius-lg)',
                 boxShadow: 'var(--shadow-xl)',
                 objectFit: 'cover',
-                maxHeight: '380px',
+                maxHeight: '320px',
               }}
             />
           </div>

@@ -81,6 +81,15 @@
   --navbar-border: var(--color-border);
 
   /* Miscellaneous */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+  --spacing-3xl: 4rem;
+  --spacing-4xl: 6rem;
+  
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
@@ -141,6 +150,12 @@ a {
   text-decoration: none;
 }
 
+/* Accessibility Focus Rings */
+*:focus-visible {
+  outline: 2px solid var(--color-action-primary);
+  outline-offset: 2px;
+}
+
 button {
   cursor: pointer;
   border: none;
@@ -150,9 +165,16 @@ button {
 
 /* Container Utility */
 .agrox-container {
+  width: 100%;
   max-width: var(--max-width);
   margin: 0 auto;
-  padding: 0 1.25rem;
+  padding: 0 var(--spacing-md);
+}
+
+@media (min-width: 768px) {
+  .agrox-container {
+    padding: 0 var(--spacing-xl);
+  }
 }
 
 /* Header & Glass Navigation */
@@ -171,7 +193,7 @@ button {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 4.5rem;
+  height: 4rem;
   gap: 1.5rem;
 }
 
@@ -308,42 +330,58 @@ button {
 
 /* Category Strip */
 .agrox-category-strip {
-  background: var(--primitive-green-900);
-  color: var(--primitive-white);
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
   overflow-x: auto;
   white-space: nowrap;
+  position: sticky;
+  top: 4rem;
+  z-index: 40;
 }
 
 .agrox-category-list {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
-  padding: 0.75rem 1.25rem;
+  gap: 0.75rem;
+  padding: 0.75rem var(--spacing-md);
   list-style: none;
 }
 
-.agrox-category-item button {
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 0.875rem;
-  font-weight: 500;
-  transition: all 0.2s ease;
-  padding: 0.25rem 0.75rem;
-  border-radius: var(--radius-full);
+@media (min-width: 768px) {
+  .agrox-category-list {
+    padding: 1rem var(--spacing-xl);
+  }
 }
 
-.agrox-category-item button:hover,
+.agrox-category-item button {
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  padding: 0.4rem 1.15rem;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-muted);
+  border: 1px solid transparent;
+}
+
+.agrox-category-item button:hover {
+  color: var(--color-text-primary);
+  border-color: var(--color-border);
+}
+
 .agrox-category-item button.active {
-  color: white;
-  background: rgba(255, 255, 255, 0.15);
+  color: var(--color-action-primary);
+  background: var(--primitive-green-100);
+  border-color: var(--color-action-primary);
 }
 
 /* Hero Banner */
 .agrox-hero {
   background: linear-gradient(135deg, var(--primitive-green-900) 0%, var(--primitive-green-800) 50%, var(--primitive-green-900) 100%);
   color: var(--primitive-white);
-  padding: 4rem 1.25rem;
+  padding: 2.5rem 2.5rem;
   border-radius: var(--radius-lg);
-  margin: 1.5rem auto;
+  margin: var(--spacing-lg) auto;
   position: relative;
   overflow: hidden;
 }
@@ -361,29 +399,41 @@ button {
 
 .agrox-hero-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 3rem;
+  grid-template-columns: 45% 1fr;
+  gap: 2.5rem;
   align-items: center;
 }
 
 .agrox-hero-title {
-  font-size: 3rem;
+  font-size: 2.75rem;
   font-weight: 800;
   line-height: 1.15;
   color: var(--primitive-white);
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
 }
 
 .agrox-hero-subtitle {
-  font-size: 1.125rem;
+  font-size: 1rem;
   color: rgba(255, 255, 255, 0.9);
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   max-width: 500px;
 }
 
 .agrox-hero-cta {
   display: flex;
   gap: 1rem;
+}
+
+/* Checkout */
+.agrox-checkout-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+}
+@media (min-width: 992px) {
+  .agrox-checkout-grid {
+    grid-template-columns: 1.5fr 1fr;
+  }
 }
 
 /* Product Grid & Cards */

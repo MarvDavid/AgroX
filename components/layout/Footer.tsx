@@ -20,7 +20,7 @@ export default function Footer() {
           }}
         >
           <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-            <div style={{ background: 'rgba(255, 255, 255, 0.1)', color: 'var(--primitive-green-400)', padding: '0.85rem', borderRadius: 'var(--radius-md)' }}>
+            <div style={{ background: 'rgba(67, 160, 71, 0.15)', color: 'var(--color-success)', padding: '0.85rem', borderRadius: 'var(--radius-md)' }}>
               <Shield size={26} />
             </div>
             <div>
@@ -30,7 +30,7 @@ export default function Footer() {
           </div>
 
           <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-            <div style={{ background: 'rgba(255, 255, 255, 0.1)', color: 'var(--color-accent)', padding: '0.85rem', borderRadius: 'var(--radius-md)' }}>
+            <div style={{ background: 'rgba(59, 130, 246, 0.15)', color: '#60A5FA', padding: '0.85rem', borderRadius: 'var(--radius-md)' }}>
               <Truck size={26} />
             </div>
             <div>
@@ -40,7 +40,7 @@ export default function Footer() {
           </div>
 
           <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-            <div style={{ background: 'rgba(255, 255, 255, 0.1)', color: 'var(--primitive-green-400)', padding: '0.85rem', borderRadius: 'var(--radius-md)' }}>
+            <div style={{ background: 'rgba(249, 168, 37, 0.15)', color: 'var(--color-accent)', padding: '0.85rem', borderRadius: 'var(--radius-md)' }}>
               <Award size={26} />
             </div>
             <div>

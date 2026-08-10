@@ -105,13 +105,7 @@ export default function CheckoutPage() {
               </Link>
             </div>
           ) : (
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-                gap: '2.5rem',
-              }}
-            >
+            <div className="agrox-checkout-grid">
               {/* Form */}
               <form
                 onSubmit={handlePlaceOrder}
