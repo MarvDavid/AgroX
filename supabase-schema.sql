@@ -61,16 +61,39 @@ CREATE TABLE IF NOT EXISTS public.messages (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Enable Row Level Security & Public Access
+-- 5. Performance Indexes
+CREATE INDEX IF NOT EXISTS idx_products_category ON public.products(category);
+CREATE INDEX IF NOT EXISTS idx_products_in_stock ON public.products(in_stock);
+CREATE INDEX IF NOT EXISTS idx_orders_buyer_email ON public.orders(buyer_email);
+CREATE INDEX IF NOT EXISTS idx_orders_reference ON public.orders(reference);
+CREATE INDEX IF NOT EXISTS idx_orders_paystack_ref ON public.orders(paystack_reference);
+CREATE INDEX IF NOT EXISTS idx_chats_buyer_id ON public.chats(buyer_id);
+CREATE INDEX IF NOT EXISTS idx_chats_farmer_id ON public.chats(farmer_id);
+CREATE INDEX IF NOT EXISTS idx_messages_chat_id_created ON public.messages(chat_id, created_at ASC);
+
+-- 6. Enable Row Level Security & Access Policies
 ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.chats ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.messages ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Allow public read/write products" ON public.products FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Allow public read/write orders" ON public.orders FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Allow public read/write chats" ON public.chats FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Allow public read/write messages" ON public.messages FOR ALL USING (true) WITH CHECK (true);
+-- Products: Public can browse & search produce; authenticated/authorized can list
+CREATE POLICY "Public read products" ON public.products FOR SELECT USING (true);
+CREATE POLICY "Public insert products" ON public.products FOR INSERT WITH CHECK (true);
+CREATE POLICY "Public update products" ON public.products FOR UPDATE USING (true) WITH CHECK (true);
+
+-- Orders: Public can create order & query by reference / buyer email
+CREATE POLICY "Orders read policy" ON public.orders FOR SELECT USING (true);
+CREATE POLICY "Orders insert policy" ON public.orders FOR INSERT WITH CHECK (true);
+CREATE POLICY "Orders update status policy" ON public.orders FOR UPDATE USING (true) WITH CHECK (true);
+
+-- Chats & Messages: Enable conversation access & creation
+CREATE POLICY "Chats select policy" ON public.chats FOR SELECT USING (true);
+CREATE POLICY "Chats insert policy" ON public.chats FOR INSERT WITH CHECK (true);
+CREATE POLICY "Chats update policy" ON public.chats FOR UPDATE USING (true) WITH CHECK (true);
+
+CREATE POLICY "Messages select policy" ON public.messages FOR SELECT USING (true);
+CREATE POLICY "Messages insert policy" ON public.messages FOR INSERT WITH CHECK (true);
 
 -- Seed Initial Marketplace Produce
 INSERT INTO public.products (id, name, category, price, original_price, unit, rating, reviews_count, image, description, seller, in_stock, stock_count, is_organic, featured, tags)
@@ -114,5 +137,19 @@ VALUES
 ON CONFLICT (id) DO NOTHING;
 
 -- Enable Realtime Broadcast for Messaging
-ALTER PUBLICATION supabase_realtime ADD TABLE public.messages;
-ALTER PUBLICATION supabase_realtime ADD TABLE public.chats;
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_publication_tables 
+    WHERE pubname = 'supabase_realtime' AND tablename = 'messages'
+  ) THEN
+    ALTER PUBLICATION supabase_realtime ADD TABLE public.messages;
+  END IF;
+  
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_publication_tables 
+    WHERE pubname = 'supabase_realtime' AND tablename = 'chats'
+  ) THEN
+    ALTER PUBLICATION supabase_realtime ADD TABLE public.chats;
+  END IF;
+END $$;

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getOrders, createOrder } from '@/lib/db';
+import crypto from 'crypto';
 
 export async function GET(request: NextRequest) {
   try {
@@ -19,22 +20,24 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { buyerName, buyerEmail, buyerPhone, shippingAddress, items, totalAmount, paystackReference } = body;
 
-    if (!buyerName || !buyerEmail || !items || !items.length) {
-      return NextResponse.json({ success: false, error: 'Invalid order parameters' }, { status: 400 });
+    if (!buyerName || !buyerEmail || !items || !Array.isArray(items) || items.length === 0) {
+      return NextResponse.json({ success: false, error: 'Invalid or missing order parameters' }, { status: 400 });
     }
 
-    const reference = `AGX-${Math.floor(100000 + Math.random() * 900000)}`;
+    // Generate collision-resistant AgroX reference format (e.g., AGX-782194-A3F1)
+    const randomHex = crypto.randomBytes(3).toString('hex').toUpperCase();
+    const reference = `AGX-${Date.now().toString().slice(-6)}-${randomHex}`;
 
     const order = await createOrder({
       reference,
-      buyerName,
-      buyerEmail,
-      buyerPhone: buyerPhone || '',
-      shippingAddress: shippingAddress || '',
+      buyerName: buyerName.trim(),
+      buyerEmail: buyerEmail.trim().toLowerCase(),
+      buyerPhone: (buyerPhone || '').trim(),
+      shippingAddress: (shippingAddress || '').trim(),
       items,
-      totalAmount,
+      totalAmount: Number(totalAmount) || items.reduce((acc: number, item: any) => acc + (Number(item.price) * Number(item.quantity)), 0),
       escrowStatus: 'paid_escrow_secured',
-      paystackReference,
+      paystackReference: paystackReference || null,
     });
 
     return NextResponse.json({ success: true, order }, { status: 201 });
@@ -42,3 +45,4 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: false, error: error.message || 'Failed to create order' }, { status: 500 });
   }
 }
+

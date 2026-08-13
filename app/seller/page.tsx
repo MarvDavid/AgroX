@@ -137,56 +137,58 @@ export default function SellerPortalPage() {
       <Navbar />
 
       <main style={{ flex: 1, padding: '2rem 0' }} className="agrox-container">
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '2rem' }} className="agrox-seller-grid">
+        <div className="agrox-seller-grid">
           
           {/* Sidebar Nav */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', background: 'var(--color-surface)', padding: '1.5rem', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-border)', height: 'fit-content' }}>
-            <h2 style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: '1rem', paddingBottom: '1rem', borderBottom: '1px solid var(--color-border)' }}>Farmer Portal</h2>
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = activeTab === item.id;
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => {
-                    if (item.id === 'messages') {
-                      setChatProduct(null);
-                      setIsChatOpen(true);
-                    } else {
-                      setActiveTab(item.id);
-                    }
-                  }}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.75rem',
-                    padding: '0.75rem 1rem',
-                    borderRadius: 'var(--radius-md)',
-                    background: isActive ? 'var(--primitive-green-100)' : 'transparent',
-                    color: isActive ? 'var(--primitive-green-900)' : 'var(--color-text-secondary)',
-                    fontWeight: isActive ? 700 : 500,
-                    textAlign: 'left',
-                    transition: 'all 0.2s',
-                    cursor: 'pointer',
-                  }}
-                >
-                  <Icon size={18} />
-                  {item.label}
-                </button>
-              );
-            })}
-          </div>
+          <aside className="agrox-seller-sidebar">
+            <h2 style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: '0.85rem', paddingBottom: '0.85rem', borderBottom: '1px solid var(--color-border)' }}>Farmer Portal</h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+              {navItems.map((item) => {
+                const Icon = item.icon;
+                const isActive = activeTab === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => {
+                      if (item.id === 'messages') {
+                        setChatProduct(null);
+                        setIsChatOpen(true);
+                      } else {
+                        setActiveTab(item.id);
+                      }
+                    }}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.75rem',
+                      padding: '0.7rem 0.9rem',
+                      borderRadius: 'var(--radius-md)',
+                      background: isActive ? 'var(--primitive-green-100)' : 'transparent',
+                      color: isActive ? 'var(--primitive-green-900)' : 'var(--color-text-secondary)',
+                      fontWeight: isActive ? 700 : 500,
+                      textAlign: 'left',
+                      transition: 'all 0.2s',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <Icon size={18} />
+                    {item.label}
+                  </button>
+                );
+              })}
+            </div>
+          </aside>
 
           {/* Main Dashboard Area */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
             
             {/* Header Action */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
               <div>
-                <h1 style={{ fontSize: '2rem', fontWeight: 800 }}>Good morning, SunValley Farms</h1>
-                <p style={{ color: 'var(--color-text-secondary)' }}>Submit produce listings & manage buyer escrow shipments.</p>
+                <h1 style={{ fontSize: '1.85rem', fontWeight: 800 }}>Good morning, SunValley Farms</h1>
+                <p style={{ color: 'var(--color-text-secondary)', marginTop: '0.15rem', fontSize: '0.95rem' }}>Submit produce listings & manage buyer escrow shipments.</p>
               </div>
-              <div style={{ display: 'flex', gap: '0.75rem' }}>
+              <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
                 <button 
                   onClick={() => {
                     setChatProduct(null);
@@ -208,29 +210,33 @@ export default function SellerPortalPage() {
             {/* Dashboard Cards */}
             {activeTab === 'dashboard' && (
               <>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
-                  <div style={{ background: 'var(--color-surface)', padding: '1.5rem', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-border)' }}>
-                    <div style={{ color: 'var(--color-text-secondary)', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.5rem' }}>Escrow Secured Revenue</div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem' }}>
+                  <div style={{ background: 'var(--color-surface)', padding: '1.25rem 1.5rem', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-border)' }}>
+                    <div style={{ color: 'var(--color-text-secondary)', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.35rem' }}>Escrow Secured Revenue</div>
                     <div style={{ fontSize: '1.75rem', fontWeight: 800 }}>{formatCurrency(totalEscrowSales || 1450000)}</div>
                   </div>
-                  <div style={{ background: 'var(--color-surface)', padding: '1.5rem', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-border)' }}>
-                    <div style={{ color: 'var(--color-text-secondary)', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.5rem' }}>Active Orders</div>
+                  <div style={{ background: 'var(--color-surface)', padding: '1.25rem 1.5rem', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-border)' }}>
+                    <div style={{ color: 'var(--color-text-secondary)', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.35rem' }}>Active Orders</div>
                     <div style={{ fontSize: '1.75rem', fontWeight: 800 }}>{orders.length || 12}</div>
                   </div>
-                  <div style={{ background: 'var(--color-surface)', padding: '1.5rem', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-border)' }}>
-                    <div style={{ color: 'var(--color-text-secondary)', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.5rem' }}>Active Listings</div>
+                  <div style={{ background: 'var(--color-surface)', padding: '1.25rem 1.5rem', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-border)' }}>
+                    <div style={{ color: 'var(--color-text-secondary)', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.35rem' }}>Active Listings</div>
                     <div style={{ fontSize: '1.75rem', fontWeight: 800 }}>{products.length}</div>
                   </div>
                 </div>
 
-                <div style={{ background: 'rgba(249, 168, 37, 0.1)', border: '1px solid rgba(249, 168, 37, 0.3)', padding: '1.5rem', borderRadius: 'var(--radius-lg)', display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-                  <AlertCircle size={24} style={{ color: 'var(--color-accent)' }} />
+                <div style={{ background: 'rgba(249, 168, 37, 0.1)', border: '1px solid rgba(249, 168, 37, 0.3)', padding: '1.25rem 1.5rem', borderRadius: 'var(--radius-lg)', display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
+                  <AlertCircle size={24} style={{ color: 'var(--color-accent)', flexShrink: 0, marginTop: '2px' }} />
                   <div>
-                    <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>Action Required</h3>
+                    <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>Action Required</h3>
                     <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem', marginTop: '0.25rem' }}>
                       Orders are waiting for freight dispatch. Update status to trigger buyer release.
                     </p>
-                    <button onClick={() => setActiveTab('orders')} style={{ marginTop: '0.75rem', fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-action-primary)', background: 'transparent' }}>
+                    <button 
+                      onClick={() => setActiveTab('orders')} 
+                      className="agrox-btn agrox-btn-outline"
+                      style={{ marginTop: '0.75rem', fontSize: '0.8rem', padding: '0.35rem 0.75rem', background: 'var(--color-surface)' }}
+                    >
                       Manage Orders →
                     </button>
                   </div>
@@ -240,20 +246,20 @@ export default function SellerPortalPage() {
 
             {/* Orders Tab */}
             {activeTab === 'orders' && (
-              <div style={{ background: 'var(--color-surface)', padding: '2rem', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-border)' }}>
-                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '1.5rem' }}>Buyer Escrow Orders</h3>
+              <div style={{ background: 'var(--color-surface)', padding: '1.5rem', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-border)' }}>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '1.25rem' }}>Buyer Escrow Orders</h3>
                 {orders.length === 0 ? (
                   <div style={{ textAlign: 'center', padding: '3rem 0', color: 'var(--color-text-secondary)' }}>No orders received yet.</div>
                 ) : (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                     {orders.map((ord) => (
-                      <div key={ord.id} style={{ padding: '1.25rem', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', background: 'var(--color-surface-muted)' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                      <div key={ord.id} style={{ padding: '1.15rem', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', background: 'var(--color-surface-muted)' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.5rem' }}>
                           <span style={{ fontWeight: 800 }}>Ref: {ord.reference}</span>
-                          <span style={{ fontWeight: 700, color: 'var(--color-success)' }}>{ord.escrowStatus.toUpperCase()}</span>
+                          <span style={{ fontWeight: 700, color: 'var(--color-success)', fontSize: '0.85rem' }}>{ord.escrowStatus.toUpperCase()}</span>
                         </div>
                         <div style={{ fontSize: '0.9rem', color: 'var(--color-text-secondary)' }}>Buyer: {ord.buyerName} ({ord.buyerEmail})</div>
-                        <div style={{ fontSize: '0.9rem', fontWeight: 700, marginTop: '0.5rem' }}>Amount: {formatCurrency(ord.totalAmount)}</div>
+                        <div style={{ fontSize: '0.9rem', fontWeight: 700, marginTop: '0.5rem', color: 'var(--color-action-primary)' }}>Amount: {formatCurrency(ord.totalAmount)}</div>
                       </div>
                     ))}
                   </div>
@@ -263,21 +269,21 @@ export default function SellerPortalPage() {
 
             {/* Produce Listings Tab */}
             {activeTab === 'products' && (
-              <div style={{ background: 'var(--color-surface)', padding: '2rem', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-border)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+              <div style={{ background: 'var(--color-surface)', padding: '1.5rem', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-border)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1.25rem' }}>
                   <h3 style={{ fontSize: '1.25rem', fontWeight: 800 }}>Active Farm Produce Listings ({products.length})</h3>
-                  <button onClick={() => setIsListingModalOpen(true)} className="agrox-btn agrox-btn-primary" style={{ padding: '0.5rem 1rem', fontSize: '0.85rem' }}>
+                  <button onClick={() => setIsListingModalOpen(true)} className="agrox-btn agrox-btn-primary" style={{ padding: '0.45rem 0.9rem', fontSize: '0.85rem' }}>
                     <Plus size={16} /> Add Listing
                   </button>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '1.25rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(210px, 1fr))', gap: '1.25rem' }}>
                   {products.map((p) => (
-                    <div key={p.id} style={{ border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', padding: '1rem', background: 'var(--color-surface-muted)', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                    <div key={p.id} style={{ border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', padding: '0.9rem', background: 'var(--color-surface-muted)', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
                       <img src={p.image} alt={p.name} style={{ width: '100%', height: '120px', objectFit: 'cover', borderRadius: 'var(--radius-sm)' }} />
-                      <div style={{ fontWeight: 700, fontSize: '0.95rem' }}>{p.name}</div>
+                      <div style={{ fontWeight: 700, fontSize: '0.95rem', marginTop: '0.25rem' }}>{p.name}</div>
                       <div style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)' }}>{p.category}</div>
-                      <div style={{ fontWeight: 800, color: 'var(--color-action-primary)' }}>{formatCurrency(p.price)} / {p.unit}</div>
+                      <div style={{ fontWeight: 800, color: 'var(--color-action-primary)', marginTop: '0.25rem' }}>{formatCurrency(p.price)} / {p.unit}</div>
                     </div>
                   ))}
                 </div>
@@ -292,11 +298,7 @@ export default function SellerPortalPage() {
       {isListingModalOpen && (
         <>
           <div className="agrox-drawer-backdrop" onClick={() => !submitted && setIsListingModalOpen(false)} style={{ zIndex: 110 }} />
-          <div style={{
-            position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-            width: '90%', maxWidth: '700px', maxHeight: '90vh', overflowY: 'auto',
-            background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)', padding: '2.5rem', zIndex: 111, boxShadow: 'var(--shadow-xl)'
-          }}>
+          <div className="agrox-modal-content">
             {submitted ? (
               <div style={{ textAlign: 'center', padding: '2rem' }}>
                 <CheckCircle2 size={56} style={{ color: 'var(--color-success)', margin: '0 auto 1rem' }} />
@@ -306,8 +308,8 @@ export default function SellerPortalPage() {
                 </p>
               </div>
             ) : (
-              <form onSubmit={handleListingSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                <h3 style={{ fontSize: '1.5rem', fontWeight: 800, borderBottom: '1px solid var(--color-border)', paddingBottom: '0.75rem' }}>
+              <form onSubmit={handleListingSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
+                <h3 style={{ fontSize: '1.35rem', fontWeight: 800, borderBottom: '1px solid var(--color-border)', paddingBottom: '0.75rem' }}>
                   List Produce to Buyer Marketplace
                 </h3>
                 
@@ -345,7 +347,7 @@ export default function SellerPortalPage() {
                   <textarea rows={3} required placeholder="Sun-dried yellow maize, 12% moisture level, high quality." className="agrox-search-input" style={{ paddingLeft: '1rem', borderRadius: 'var(--radius-md)', height: 'auto' }} value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} />
                 </div>
 
-                <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+                <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
                   <button type="button" onClick={() => setIsListingModalOpen(false)} className="agrox-btn" style={{ flex: 1, background: 'var(--color-surface-muted)', color: 'var(--color-text-primary)' }}>Cancel</button>
                   <button type="submit" disabled={submitting} className="agrox-btn agrox-btn-primary" style={{ flex: 2 }}>
                     {submitting ? <RefreshCw size={18} className="spin" /> : <Upload size={18} />} Publish Listing
@@ -367,8 +369,48 @@ export default function SellerPortalPage() {
       />
       
       <style dangerouslySetInnerHTML={{__html: `
-        .agrox-seller-grid { grid-template-columns: 1fr; }
-        @media(min-width: 992px) { .agrox-seller-grid { grid-template-columns: 250px 1fr; } }
+        .agrox-seller-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 1.5rem;
+        }
+        .agrox-seller-sidebar {
+          background: var(--color-surface);
+          padding: 1.25rem;
+          border-radius: var(--radius-lg);
+          border: 1px solid var(--color-border);
+          height: fit-content;
+        }
+        .agrox-modal-content {
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 92%;
+          max-width: 680px;
+          max-height: 90vh;
+          overflow-y: auto;
+          background: var(--color-surface);
+          border-radius: var(--radius-lg);
+          padding: 1.5rem;
+          z-index: 111;
+          box-shadow: var(--shadow-xl);
+        }
+        @media(min-width: 768px) {
+          .agrox-modal-content {
+            padding: 2.25rem;
+          }
+        }
+        @media(min-width: 992px) {
+          .agrox-seller-grid {
+            grid-template-columns: 240px 1fr;
+            gap: 2rem;
+          }
+          .agrox-seller-sidebar {
+            position: sticky;
+            top: 5.5rem;
+          }
+        }
       `}} />
     </div>
   );

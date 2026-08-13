@@ -253,24 +253,43 @@ export async function addProduct(newProductData: Omit<Product, 'id'>): Promise<P
 }
 
 export async function getProductById(id: string): Promise<Product | null> {
-  const products = await getProducts();
-  return products.find((p) => p.id === id) || null;
+  if (isSupabaseConfigured) {
+    try {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('id', id)
+        .maybeSingle();
+
+      if (!error && data) {
+        return mapDbProduct(data);
+      }
+    } catch (e) {
+      console.warn('Supabase fetch product by id fallback:', e);
+    }
+  }
+
+  const memoryMatch = inMemoryProducts.find((p) => p.id === id);
+  return memoryMatch || null;
 }
 
 /* ORDERS CRUD */
 export async function getOrders(farmerId?: string, buyerEmail?: string): Promise<Order[]> {
   if (isSupabaseConfigured) {
     try {
-      const { data, error } = await supabase.from('orders').select('*');
-      if (!error && data && data.length > 0) {
-        let res = data.map(mapDbOrder);
+      let query = supabase.from('orders').select('*').order('created_at', { ascending: false });
+
+      if (buyerEmail) {
+        query = query.eq('buyer_email', buyerEmail);
+      }
+
+      const { data, error } = await query;
+      if (!error && data) {
+        let mapped = data.map(mapDbOrder);
         if (farmerId) {
-          res = res.filter((o) => o.items.some((i) => i.farmerId === farmerId));
+          mapped = mapped.filter((o) => o.items.some((i) => i.farmerId === farmerId));
         }
-        if (buyerEmail) {
-          res = res.filter((o) => o.buyerEmail === buyerEmail);
-        }
-        return res;
+        return mapped;
       }
     } catch (e) {
       console.warn('Supabase fetch orders fallback:', e);
@@ -290,7 +309,7 @@ export async function getOrders(farmerId?: string, buyerEmail?: string): Promise
 export async function createOrder(orderData: Omit<Order, 'id' | 'createdAt'>): Promise<Order> {
   const newOrder: Order = {
     ...orderData,
-    id: `ord-${Date.now()}`,
+    id: `ord-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`,
     createdAt: new Date().toISOString(),
   };
 
@@ -337,7 +356,7 @@ export async function updateOrderStatus(reference: string, escrowStatus: EscrowS
         .update({ escrow_status: escrowStatus })
         .or(`reference.eq.${reference},paystack_reference.eq.${reference}`)
         .select()
-        .single();
+        .maybeSingle();
 
       if (!error && data) {
         return mapDbOrder(data);
@@ -354,8 +373,12 @@ export async function updateOrderStatus(reference: string, escrowStatus: EscrowS
 export async function getChats(userId?: string): Promise<ChatThread[]> {
   if (isSupabaseConfigured) {
     try {
-      const { data, error } = await supabase.from('chats').select('*');
-      if (!error && data && data.length > 0) {
+      let query = supabase.from('chats').select('*').order('updated_at', { ascending: false });
+      if (userId) {
+        query = query.or(`buyer_id.eq.${userId},farmer_id.eq.${userId}`);
+      }
+      const { data, error } = await query;
+      if (!error && data) {
         return data.map(mapDbChat);
       }
     } catch (e) {
@@ -363,6 +386,9 @@ export async function getChats(userId?: string): Promise<ChatThread[]> {
     }
   }
 
+  if (userId) {
+    return inMemoryChats.filter((c) => c.buyerId === userId || c.farmerId === userId);
+  }
   return [...inMemoryChats];
 }
 

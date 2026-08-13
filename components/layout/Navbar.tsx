@@ -58,7 +58,7 @@ export default function Navbar({
               <span className="hidden-mobile">Farmer Portal</span>
             </Link>
 
-            {onOpenChat && (
+            {onOpenChat ? (
               <button
                 className="agrox-cart-trigger"
                 onClick={onOpenChat}
@@ -68,6 +68,16 @@ export default function Navbar({
               >
                 <MessageSquare size={20} />
               </button>
+            ) : (
+              <Link
+                href="/chat"
+                className="agrox-cart-trigger"
+                aria-label="Chat Inbox"
+                title="Chat Inbox"
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0.625rem', borderRadius: 'var(--radius-md)', background: 'var(--color-surface-muted)' }}
+              >
+                <MessageSquare size={20} />
+              </Link>
             )}
 
             <button
