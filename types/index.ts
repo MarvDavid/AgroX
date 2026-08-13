@@ -46,3 +46,58 @@ export interface ProductFilterState {
   inStockOnly: boolean;
   sortBy: 'featured' | 'price-low' | 'price-high' | 'rating';
 }
+
+export type EscrowStatus = 
+  | 'pending'
+  | 'paid_escrow_secured'
+  | 'dispatched'
+  | 'delivered'
+  | 'escrow_released'
+  | 'disputed';
+
+export interface OrderItem {
+  productId: string;
+  productName: string;
+  price: number;
+  unit: string;
+  quantity: number;
+  farmerId: string;
+  farmerName: string;
+}
+
+export interface Order {
+  id: string;
+  reference: string;
+  buyerName: string;
+  buyerEmail: string;
+  buyerPhone: string;
+  shippingAddress: string;
+  items: OrderItem[];
+  totalAmount: number;
+  escrowStatus: EscrowStatus;
+  paystackReference?: string;
+  createdAt: string;
+}
+
+export interface ChatMessage {
+  id: string;
+  chatId: string;
+  senderId: string;
+  senderName: string;
+  senderRole: 'farmer' | 'buyer';
+  text: string;
+  createdAt: string;
+}
+
+export interface ChatThread {
+  id: string;
+  productId?: string;
+  productName?: string;
+  buyerId: string;
+  buyerName: string;
+  farmerId: string;
+  farmerName: string;
+  lastMessage?: string;
+  updatedAt: string;
+}
+

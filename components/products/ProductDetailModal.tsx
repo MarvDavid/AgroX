@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { X, Star, MapPin, ShieldCheck, ShoppingCart, Truck, Check } from 'lucide-react';
+import { X, Star, MapPin, ShieldCheck, ShoppingCart, MessageSquare } from 'lucide-react';
 import { Product } from '@/types';
 import { useCart } from '@/context/CartContext';
 import { formatCurrency } from '@/lib/utils';
@@ -9,9 +9,10 @@ import { formatCurrency } from '@/lib/utils';
 interface ProductDetailModalProps {
   product: Product | null;
   onClose: () => void;
+  onChatFarmer?: (product: Product) => void;
 }
 
-export default function ProductDetailModal({ product, onClose }: ProductDetailModalProps) {
+export default function ProductDetailModal({ product, onClose, onChatFarmer }: ProductDetailModalProps) {
   const { addToCart } = useCart();
   const [quantity, setQuantity] = useState(1);
 
@@ -117,13 +118,29 @@ export default function ProductDetailModal({ product, onClose }: ProductDetailMo
               }}
             >
               <div style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', marginBottom: '0.25rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Verified Farmer</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 700, fontSize: '1.1rem' }}>
-                <ShieldCheck size={18} style={{ color: 'var(--color-success)' }} />
-                <span>{product.seller.name}</span>
-              </div>
-              <div style={{ fontSize: '0.9rem', color: 'var(--color-text-secondary)', marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                <MapPin size={14} />
-                {product.seller.location}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 700, fontSize: '1.1rem' }}>
+                    <ShieldCheck size={18} style={{ color: 'var(--color-success)' }} />
+                    <span>{product.seller.name}</span>
+                  </div>
+                  <div style={{ fontSize: '0.9rem', color: 'var(--color-text-secondary)', marginTop: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                    <MapPin size={14} />
+                    {product.seller.location}
+                  </div>
+                </div>
+                {onChatFarmer && (
+                  <button
+                    onClick={() => {
+                      onChatFarmer(product);
+                      onClose();
+                    }}
+                    className="agrox-btn agrox-btn-outline"
+                    style={{ padding: '0.5rem 0.85rem', fontSize: '0.85rem' }}
+                  >
+                    <MessageSquare size={16} /> Chat Farmer
+                  </button>
+                )}
               </div>
             </div>
 
@@ -150,7 +167,7 @@ export default function ProductDetailModal({ product, onClose }: ProductDetailMo
               
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', justifyContent: 'center', padding: '0.75rem', background: 'rgba(67, 160, 71, 0.1)', color: 'var(--color-success)', borderRadius: 'var(--radius-md)', fontSize: '0.85rem', fontWeight: 600 }}>
                 <ShieldCheck size={16} />
-                Payment protected until delivery.
+                AgroX Escrow Protected Payment
               </div>
             </div>
           </div>

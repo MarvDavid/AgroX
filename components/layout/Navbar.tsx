@@ -2,17 +2,18 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { ShoppingBag, Search, Sprout, Store, User, Menu, X } from 'lucide-react';
+import { ShoppingBag, Search, Store, User, MessageSquare, LayoutDashboard } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 
 export default function Navbar({
   onSearchChange,
+  onOpenChat,
 }: {
   onSearchChange?: (query: string) => void;
+  onOpenChat?: () => void;
 }) {
   const { setIsCartOpen, totalItems } = useCart();
   const [searchValue, setSearchValue] = useState('');
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,10 +48,27 @@ export default function Navbar({
 
           {/* Nav buttons */}
           <div className="agrox-nav-actions">
-            <Link href="/seller" className="agrox-btn agrox-btn-outline">
+            <Link href="/buyer" className="agrox-btn agrox-btn-outline" title="Buyer Dashboard">
+              <LayoutDashboard size={18} />
+              <span className="hidden-mobile">Buyer Dashboard</span>
+            </Link>
+
+            <Link href="/seller" className="agrox-btn agrox-btn-outline" title="Farmer Portal">
               <Store size={18} />
               <span className="hidden-mobile">Farmer Portal</span>
             </Link>
+
+            {onOpenChat && (
+              <button
+                className="agrox-cart-trigger"
+                onClick={onOpenChat}
+                aria-label="Open Direct Messages"
+                title="Direct Chat"
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0.625rem', borderRadius: 'var(--radius-md)', background: 'var(--color-surface-muted)' }}
+              >
+                <MessageSquare size={20} />
+              </button>
+            )}
 
             <button
               className="agrox-cart-trigger"
@@ -62,11 +80,6 @@ export default function Navbar({
               {totalItems > 0 && (
                 <span className="agrox-cart-badge">{totalItems}</span>
               )}
-            </button>
-
-            <button className="agrox-btn agrox-btn-primary">
-              <User size={18} />
-              <span>Sign In</span>
             </button>
           </div>
         </div>
