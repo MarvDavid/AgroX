@@ -86,35 +86,35 @@ export default function HomePage() {
         <HeroSection />
 
         {/* Catalog Section */}
-        <section id="products" className="agrox-container" style={{ marginTop: '3rem' }}>
+        <section id="products" className="agrox-container" style={{ marginTop: '2rem' }}>
           <div
             style={{
               display: 'flex',
-              alignItems: 'center',
+              alignItems: 'flex-start',
               justifyContent: 'space-between',
               flexWrap: 'wrap',
               gap: '1rem',
-              marginBottom: '1.5rem',
+              marginBottom: '1.25rem',
             }}
           >
             <div>
-              <h2 style={{ fontSize: '1.75rem', fontWeight: 800 }}>
+              <h2 style={{ fontSize: 'clamp(1.35rem, 3.5vw, 1.75rem)', fontWeight: 800, lineHeight: 1.25 }}>
                 {selectedCategory === 'All' ? 'Verified Agricultural Produce & Equipment' : selectedCategory}
               </h2>
-              <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem' }}>
+              <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.875rem', marginTop: '0.2rem' }}>
                 Showing {filteredProducts.length} verified listings from accredited farmers & suppliers
               </p>
             </div>
 
             {/* Filter toggles & Refresh */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
               <button
                 onClick={fetchProducts}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
                   gap: '0.4rem',
-                  fontSize: '0.85rem',
+                  fontSize: '0.8rem',
                   padding: '0.4rem 0.75rem',
                   borderRadius: 'var(--radius-md)',
                   background: 'var(--color-surface-muted)',
@@ -130,8 +130,8 @@ export default function HomePage() {
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '0.5rem',
-                  fontSize: '0.875rem',
+                  gap: '0.4rem',
+                  fontSize: '0.825rem',
                   cursor: 'pointer',
                   userSelect: 'none',
                 }}
@@ -142,7 +142,7 @@ export default function HomePage() {
                   onChange={(e) => setOrganicOnly(e.target.checked)}
                   style={{ accentColor: 'var(--color-success)', width: '16px', height: '16px' }}
                 />
-                <span style={{ fontWeight: 600 }}>🌿 100% Organic Only</span>
+                <span style={{ fontWeight: 600 }}>🌿 100% Organic</span>
               </label>
             </div>
           </div>

@@ -24,6 +24,7 @@ export default function DedicatedChatPage() {
   const [inputText, setInputText] = useState('');
   const [loading, setLoading] = useState(true);
   const [role, setRole] = useState<'buyer' | 'farmer'>('buyer');
+  const [mobileView, setMobileView] = useState<'list' | 'chat'>('list');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const currentUser = role === 'buyer'
@@ -45,7 +46,7 @@ export default function DedicatedChatPage() {
       const data = await res.json();
       if (data.success && data.threads) {
         setThreads(data.threads);
-        if (data.threads.length > 0) {
+        if (data.threads.length > 0 && !activeThread) {
           setActiveThread(data.threads[0]);
           await loadMessages(data.threads[0].id);
         }
@@ -71,6 +72,7 @@ export default function DedicatedChatPage() {
 
   const handleSelectThread = async (thread: ChatThread) => {
     setActiveThread(thread);
+    setMobileView('chat');
     await loadMessages(thread.id);
   };
 
@@ -117,43 +119,43 @@ export default function DedicatedChatPage() {
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--color-surface-muted)' }}>
       <Navbar />
 
-      <main style={{ flex: 1, padding: '2rem 0' }} className="agrox-container">
+      <main style={{ flex: 1, padding: '1.5rem 0' }} className="agrox-container">
         {/* Role Toggle Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.25rem' }}>
           <div>
-            <h1 style={{ fontSize: '1.75rem', fontWeight: 800 }}>AgroX Direct Messaging Inbox</h1>
-            <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem', marginTop: '0.2rem' }}>
+            <h1 style={{ fontSize: 'clamp(1.4rem, 3.5vw, 1.75rem)', fontWeight: 800, lineHeight: 1.25 }}>AgroX Direct Messaging Inbox</h1>
+            <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.85rem', marginTop: '0.2rem' }}>
               Real-time produce negotiation & logistics coordination (Supabase Client).
             </p>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'var(--color-surface)', padding: '0.35rem 0.5rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)' }}>
-            <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--color-text-secondary)' }}>View As:</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', background: 'var(--color-surface)', padding: '0.25rem 0.35rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)' }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--color-text-secondary)', paddingLeft: '0.35rem' }}>View As:</span>
             <button
               onClick={() => setRole('buyer')}
               style={{
-                padding: '0.4rem 0.85rem',
+                padding: '0.35rem 0.75rem',
                 borderRadius: 'var(--radius-sm)',
                 background: role === 'buyer' ? 'var(--color-action-primary)' : 'transparent',
                 color: role === 'buyer' ? '#FFFFFF' : 'var(--color-text-primary)',
                 fontWeight: 700,
-                fontSize: '0.8rem',
+                fontSize: '0.75rem',
               }}
             >
-              Buyer View
+              Buyer
             </button>
             <button
               onClick={() => setRole('farmer')}
               style={{
-                padding: '0.4rem 0.85rem',
+                padding: '0.35rem 0.75rem',
                 borderRadius: 'var(--radius-sm)',
                 background: role === 'farmer' ? 'var(--primitive-green-900)' : 'transparent',
                 color: role === 'farmer' ? '#FFFFFF' : 'var(--color-text-primary)',
                 fontWeight: 700,
-                fontSize: '0.8rem',
+                fontSize: '0.75rem',
               }}
             >
-              Farmer View
+              Farmer
             </button>
           </div>
         </div>
@@ -162,8 +164,9 @@ export default function DedicatedChatPage() {
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: '1fr',
-            height: '650px',
+            height: 'calc(100vh - 220px)',
+            minHeight: '520px',
+            maxHeight: '680px',
             background: 'var(--color-surface)',
             borderRadius: 'var(--radius-lg)',
             border: '1px solid var(--color-border)',
@@ -173,20 +176,23 @@ export default function DedicatedChatPage() {
           className="agrox-chat-inbox-grid"
         >
           {/* Thread List Sidebar */}
-          <div style={{ borderRight: '1px solid var(--color-border)', display: 'flex', flexDirection: 'column', background: 'var(--color-surface-muted)' }}>
-            <div style={{ padding: '1.25rem', borderBottom: '1px solid var(--color-border)', background: 'var(--color-surface)' }}>
-              <div style={{ fontWeight: 800, fontSize: '1rem', marginBottom: '0.75rem' }}>Active Conversations</div>
+          <div
+            className={`agrox-chat-thread-list ${mobileView === 'chat' ? 'agrox-mobile-hidden' : ''}`}
+            style={{ borderRight: '1px solid var(--color-border)', display: 'flex', flexDirection: 'column', background: 'var(--color-surface-muted)' }}
+          >
+            <div style={{ padding: '1rem', borderBottom: '1px solid var(--color-border)', background: 'var(--color-surface)' }}>
+              <div style={{ fontWeight: 800, fontSize: '0.95rem', marginBottom: '0.5rem' }}>Active Conversations ({threads.length})</div>
               <div style={{ position: 'relative' }}>
-                <Search size={16} style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-secondary)' }} />
+                <Search size={15} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-secondary)' }} />
                 <input
                   type="text"
                   placeholder="Search chats..."
                   style={{
                     width: '100%',
-                    padding: '0.5rem 0.5rem 0.5rem 2.25rem',
+                    padding: '0.45rem 0.5rem 0.45rem 2.1rem',
                     borderRadius: 'var(--radius-md)',
                     border: '1px solid var(--color-border)',
-                    fontSize: '0.85rem',
+                    fontSize: '0.825rem',
                     background: 'var(--color-surface-muted)',
                   }}
                 />
@@ -207,7 +213,7 @@ export default function DedicatedChatPage() {
                       key={t.id}
                       onClick={() => handleSelectThread(t)}
                       style={{
-                        padding: '1rem 1.25rem',
+                        padding: '0.85rem 1rem',
                         borderBottom: '1px solid var(--color-border)',
                         background: isSelected ? 'var(--color-surface)' : 'transparent',
                         cursor: 'pointer',
@@ -215,16 +221,16 @@ export default function DedicatedChatPage() {
                         transition: 'all 0.15s',
                       }}
                     >
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
-                        <div style={{ fontWeight: 700, fontSize: '0.925rem' }}>{partnerName}</div>
-                        <span style={{ fontSize: '0.7rem', color: 'var(--color-text-secondary)' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.2rem' }}>
+                        <div style={{ fontWeight: 700, fontSize: '0.875rem' }}>{partnerName}</div>
+                        <span style={{ fontSize: '0.675rem', color: 'var(--color-text-secondary)' }}>
                           {new Date(t.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </span>
                       </div>
-                      <div style={{ fontSize: '0.8rem', color: 'var(--color-action-primary)', fontWeight: 600, marginBottom: '0.2rem' }}>
+                      <div style={{ fontSize: '0.785rem', color: 'var(--color-action-primary)', fontWeight: 600, marginBottom: '0.15rem' }}>
                         {t.productName || 'General Produce'}
                       </div>
-                      <div style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      <div style={{ fontSize: '0.785rem', color: 'var(--color-text-secondary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {t.lastMessage}
                       </div>
                     </div>
@@ -235,38 +241,51 @@ export default function DedicatedChatPage() {
           </div>
 
           {/* Active Chat Conversation Panel */}
-          <div style={{ display: 'flex', flexDirection: 'column', background: 'var(--color-surface)' }}>
+          <div
+            className={`agrox-chat-panel ${mobileView === 'list' ? 'agrox-mobile-hidden' : ''}`}
+            style={{ display: 'flex', flexDirection: 'column', background: 'var(--color-surface)' }}
+          >
             {activeThread ? (
               <>
-                {/* Header */}
-                <div style={{ padding: '1rem 1.5rem', borderBottom: '1px solid var(--color-border)', background: 'var(--color-surface-muted)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div>
-                    <h3 style={{ fontSize: '1.1rem', fontWeight: 800 }}>
-                      {role === 'buyer' ? activeThread.farmerName : activeThread.buyerName}
-                    </h3>
-                    <div style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', marginTop: '0.15rem' }}>
-                      Inquiry Item: <strong>{activeThread.productName}</strong>
+                {/* Header with Mobile Back Button */}
+                <div style={{ padding: '0.75rem 1rem', borderBottom: '1px solid var(--color-border)', background: 'var(--color-surface-muted)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.5rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <button
+                      onClick={() => setMobileView('list')}
+                      className="agrox-btn agrox-btn-outline visible-mobile"
+                      style={{ padding: '0.35rem 0.6rem', fontSize: '0.75rem' }}
+                      aria-label="Back to chat list"
+                    >
+                      <ArrowLeft size={16} />
+                    </button>
+                    <div>
+                      <h3 style={{ fontSize: '0.95rem', fontWeight: 800, lineHeight: 1.2 }}>
+                        {role === 'buyer' ? activeThread.farmerName : activeThread.buyerName}
+                      </h3>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', marginTop: '0.1rem' }}>
+                        Item: <strong>{activeThread.productName}</strong>
+                      </div>
                     </div>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'var(--primitive-green-100)', color: 'var(--primitive-green-900)', padding: '0.35rem 0.75rem', borderRadius: '12px', fontSize: '0.775rem', fontWeight: 700 }}>
-                    <ShieldCheck size={14} /> Escrow Protected Channel
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', background: 'var(--primitive-green-100)', color: 'var(--primitive-green-900)', padding: '0.25rem 0.6rem', borderRadius: '10px', fontSize: '0.725rem', fontWeight: 700, flexShrink: 0 }}>
+                    <ShieldCheck size={13} /> <span className="hidden-mobile">Escrow Protected</span>
                   </div>
                 </div>
 
                 {/* Messages Body */}
-                <div style={{ flex: 1, overflowY: 'auto', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div style={{ flex: 1, overflowY: 'auto', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                   {messages.map((msg) => {
                     const isMe = msg.senderId === currentUser.id;
                     return (
                       <div key={msg.id} style={{ display: 'flex', flexDirection: 'column', alignItems: isMe ? 'flex-end' : 'flex-start' }}>
-                        <div style={{ fontSize: '0.725rem', fontWeight: 600, color: 'var(--color-text-secondary)', marginBottom: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                          {msg.senderRole === 'farmer' ? <Store size={12} /> : <User size={12} />}
+                        <div style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--color-text-secondary)', marginBottom: '0.2rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                          {msg.senderRole === 'farmer' ? <Store size={11} /> : <User size={11} />}
                           {msg.senderName} ({msg.senderRole})
                         </div>
-                        <div style={{ maxWidth: '75%', padding: '0.85rem 1.15rem', borderRadius: isMe ? '16px 16px 2px 16px' : '16px 16px 16px 2px', background: isMe ? 'var(--color-action-primary)' : 'var(--color-surface-muted)', color: isMe ? '#FFFFFF' : 'var(--color-text-primary)', fontSize: '0.925rem', lineHeight: 1.5, boxShadow: 'var(--shadow-sm)' }}>
+                        <div style={{ maxWidth: '85%', padding: '0.75rem 1rem', borderRadius: isMe ? '14px 14px 2px 14px' : '14px 14px 14px 2px', background: isMe ? 'var(--color-action-primary)' : 'var(--color-surface-muted)', color: isMe ? '#FFFFFF' : 'var(--color-text-primary)', fontSize: '0.875rem', lineHeight: 1.45, boxShadow: 'var(--shadow-sm)', wordBreak: 'break-word' }}>
                           {msg.text}
                         </div>
-                        <span style={{ fontSize: '0.675rem', color: 'var(--color-text-secondary)', marginTop: '0.25rem' }}>
+                        <span style={{ fontSize: '0.65rem', color: 'var(--color-text-secondary)', marginTop: '0.2rem' }}>
                           {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </span>
                       </div>
@@ -276,23 +295,23 @@ export default function DedicatedChatPage() {
                 </div>
 
                 {/* Message Input Bar */}
-                <form onSubmit={handleSendMessage} style={{ padding: '1.25rem', borderTop: '1px solid var(--color-border)', display: 'flex', gap: '0.75rem', background: 'var(--color-surface)' }}>
+                <form onSubmit={handleSendMessage} style={{ padding: '0.85rem 1rem', borderTop: '1px solid var(--color-border)', display: 'flex', gap: '0.5rem', background: 'var(--color-surface)' }}>
                   <input
                     type="text"
-                    placeholder="Type message to seller or buyer..."
+                    placeholder="Type message..."
                     value={inputText}
                     onChange={(e) => setInputText(e.target.value)}
-                    style={{ flex: 1, padding: '0.85rem 1.15rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)', fontSize: '0.925rem', outline: 'none', background: 'var(--color-surface-muted)' }}
+                    style={{ flex: 1, padding: '0.65rem 0.85rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)', fontSize: '0.875rem', outline: 'none', background: 'var(--color-surface-muted)' }}
                   />
-                  <button type="submit" disabled={!inputText.trim()} className="agrox-btn agrox-btn-primary" style={{ padding: '0.85rem 1.5rem', opacity: inputText.trim() ? 1 : 0.5 }}>
-                    <Send size={18} /> Send
+                  <button type="submit" disabled={!inputText.trim()} className="agrox-btn agrox-btn-primary" style={{ padding: '0.65rem 1rem', opacity: inputText.trim() ? 1 : 0.5 }}>
+                    <Send size={16} /> <span className="hidden-mobile">Send</span>
                   </button>
                 </form>
               </>
             ) : (
-              <div style={{ textAlign: 'center', padding: '5rem 1rem', color: 'var(--color-text-secondary)' }}>
-                <MessageSquare size={48} style={{ margin: '0 auto 1rem', opacity: 0.3 }} />
-                <h3 style={{ fontSize: '1.1rem', fontWeight: 700 }}>Select a chat conversation</h3>
+              <div style={{ textAlign: 'center', padding: '4rem 1rem', color: 'var(--color-text-secondary)' }}>
+                <MessageSquare size={44} style={{ margin: '0 auto 0.75rem', opacity: 0.3 }} />
+                <h3 style={{ fontSize: '1rem', fontWeight: 700 }}>Select a chat conversation</h3>
               </div>
             )}
           </div>
@@ -303,7 +322,19 @@ export default function DedicatedChatPage() {
 
       <style dangerouslySetInnerHTML={{__html: `
         .agrox-chat-inbox-grid { grid-template-columns: 1fr; }
-        @media(min-width: 768px) { .agrox-chat-inbox-grid { grid-template-columns: 320px 1fr; } }
+        @media(max-width: 767px) {
+          .agrox-chat-thread-list.agrox-mobile-hidden,
+          .agrox-chat-panel.agrox-mobile-hidden {
+            display: none !important;
+          }
+        }
+        @media(min-width: 768px) {
+          .agrox-chat-inbox-grid { grid-template-columns: 300px 1fr; }
+          .agrox-chat-thread-list,
+          .agrox-chat-panel {
+            display: flex !important;
+          }
+        }
       `}} />
     </div>
   );

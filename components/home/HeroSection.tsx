@@ -22,7 +22,7 @@ export default function HeroSection() {
               AgroX connects certified commercial farmers, equipment manufacturers, and bulk produce buyers with transparent pricing and fast logistics.
             </p>
 
-            <div className="agrox-hero-cta">
+            <div className="agrox-hero-cta" style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
               <a href="#products" className="agrox-btn" style={{ background: 'var(--color-accent)', color: 'var(--primitive-charcoal-900)' }}>
                 Browse Catalog <ArrowRight size={18} />
               </a>
@@ -34,24 +34,25 @@ export default function HeroSection() {
             {/* Quick stats */}
             <div
               style={{
-                display: 'flex',
-                gap: '2rem',
+                display: 'grid',
+                gridTemplateColumns: 'repeat(3, 1fr)',
+                gap: '0.75rem',
                 marginTop: '1.5rem',
-                paddingTop: '1.5rem',
+                paddingTop: '1.25rem',
                 borderTop: '1px solid var(--color-glass-border)',
               }}
             >
               <div>
-                <div style={{ fontSize: '1.5rem', fontWeight: 800 }}>5,000+</div>
-                <div style={{ fontSize: '0.8rem', opacity: 0.8 }}>Verified Farmers</div>
+                <div style={{ fontSize: 'clamp(1.15rem, 2.5vw, 1.5rem)', fontWeight: 800 }}>5,000+</div>
+                <div style={{ fontSize: '0.75rem', opacity: 0.85, lineHeight: 1.2 }}>Verified Farmers</div>
               </div>
               <div>
-                <div style={{ fontSize: '1.5rem', fontWeight: 800 }}>100%</div>
-                <div style={{ fontSize: '0.8rem', opacity: 0.8 }}>Quality Guarantee</div>
+                <div style={{ fontSize: 'clamp(1.15rem, 2.5vw, 1.5rem)', fontWeight: 800 }}>100%</div>
+                <div style={{ fontSize: '0.75rem', opacity: 0.85, lineHeight: 1.2 }}>Quality Guarantee</div>
               </div>
               <div>
-                <div style={{ fontSize: '1.5rem', fontWeight: 800 }}>24-48 hrs</div>
-                <div style={{ fontSize: '0.8rem', opacity: 0.8 }}>Logistics Delivery</div>
+                <div style={{ fontSize: 'clamp(1.15rem, 2.5vw, 1.5rem)', fontWeight: 800 }}>24-48 hrs</div>
+                <div style={{ fontSize: '0.75rem', opacity: 0.85, lineHeight: 1.2 }}>Fast Logistics</div>
               </div>
             </div>
           </div>

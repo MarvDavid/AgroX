@@ -26,42 +26,45 @@ export default function ProductDetailModal({ product, onClose, onChatFarmer }: P
         style={{ zIndex: 110 }}
       />
       <div
+        className="agrox-modal-dialog"
         style={{
           position: 'fixed',
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
-          width: '90%',
-          maxWidth: '800px',
+          width: '94%',
+          maxWidth: '780px',
           maxHeight: '90vh',
           background: 'var(--color-surface)',
           borderRadius: 'var(--radius-lg)',
           boxShadow: 'var(--shadow-xl)',
           zIndex: 111,
           overflowY: 'auto',
-          padding: '2rem',
+          padding: '1.25rem',
         }}
       >
         <button
           onClick={onClose}
           style={{
             position: 'absolute',
-            top: '1rem',
-            right: '1rem',
+            top: '0.85rem',
+            right: '0.85rem',
             background: 'var(--color-surface-muted)',
             borderRadius: '9999px',
-            padding: '0.5rem',
+            padding: '0.4rem',
             color: 'var(--color-text-secondary)',
+            zIndex: 10,
           }}
+          aria-label="Close modal"
         >
-          <X size={20} />
+          <X size={18} />
         </button>
 
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-            gap: '2rem',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
+            gap: '1.25rem',
           }}
         >
           <div>
@@ -70,7 +73,7 @@ export default function ProductDetailModal({ product, onClose, onChatFarmer }: P
               alt={product.name}
               style={{
                 width: '100%',
-                height: '320px',
+                height: '240px',
                 objectFit: 'cover',
                 borderRadius: 'var(--radius-md)',
               }}
@@ -79,53 +82,53 @@ export default function ProductDetailModal({ product, onClose, onChatFarmer }: P
 
           <div>
             <span className="agrox-card-category">{product.category}</span>
-            <h2 style={{ fontSize: '1.75rem', fontWeight: 800, margin: '0.25rem 0 0.5rem' }}>
+            <h2 style={{ fontSize: 'clamp(1.25rem, 3.5vw, 1.65rem)', fontWeight: 800, margin: '0.2rem 0 0.4rem', lineHeight: 1.25 }}>
               {product.name}
             </h2>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.75rem', flexWrap: 'wrap' }}>
               <div style={{ display: 'flex', alignItems: 'center', color: 'var(--color-accent)' }}>
-                <Star size={16} fill="currentColor" />
-                <span style={{ fontWeight: 700, marginLeft: '0.25rem', color: 'var(--color-text-primary)' }}>
+                <Star size={15} fill="currentColor" />
+                <span style={{ fontWeight: 700, marginLeft: '0.25rem', color: 'var(--color-text-primary)', fontSize: '0.9rem' }}>
                   {product.rating}
                 </span>
               </div>
               <span style={{ color: 'var(--color-border)' }}>|</span>
-              <span style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)' }}>
+              <span style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)' }}>
                 {product.reviewsCount} Customer Reviews
               </span>
             </div>
 
-            <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--color-action-primary)', marginBottom: '1rem' }}>
+            <div style={{ fontSize: 'clamp(1.4rem, 3.5vw, 1.85rem)', fontWeight: 800, color: 'var(--color-action-primary)', marginBottom: '0.75rem' }}>
               {formatCurrency(product.price)}{' '}
-              <span style={{ fontSize: '0.9rem', color: 'var(--color-text-secondary)', fontWeight: 400 }}>
+              <span style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)', fontWeight: 400 }}>
                 / {product.unit}
               </span>
             </div>
 
-            <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.925rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
+            <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.875rem', lineHeight: 1.5, marginBottom: '1.15rem' }}>
               {product.description}
             </p>
 
             {/* Seller card */}
             <div
               style={{
-                padding: '1rem',
+                padding: '0.85rem',
                 borderRadius: 'var(--radius-md)',
                 background: 'var(--color-surface-muted)',
                 border: '1px solid var(--color-border)',
-                marginBottom: '1.5rem',
+                marginBottom: '1.25rem',
               }}
             >
-              <div style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', marginBottom: '0.25rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Verified Farmer</div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', marginBottom: '0.2rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Verified Farmer</div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
                 <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 700, fontSize: '1.1rem' }}>
-                    <ShieldCheck size={18} style={{ color: 'var(--color-success)' }} />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 700, fontSize: '0.95rem' }}>
+                    <ShieldCheck size={16} style={{ color: 'var(--color-success)' }} />
                     <span>{product.seller.name}</span>
                   </div>
-                  <div style={{ fontSize: '0.9rem', color: 'var(--color-text-secondary)', marginTop: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                    <MapPin size={14} />
+                  <div style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', marginTop: '0.15rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                    <MapPin size={13} />
                     {product.seller.location}
                   </div>
                 </div>
@@ -136,37 +139,37 @@ export default function ProductDetailModal({ product, onClose, onChatFarmer }: P
                       onClose();
                     }}
                     className="agrox-btn agrox-btn-outline"
-                    style={{ padding: '0.5rem 0.85rem', fontSize: '0.85rem' }}
+                    style={{ padding: '0.35rem 0.65rem', fontSize: '0.8rem' }}
                   >
-                    <MessageSquare size={16} /> Chat Farmer
+                    <MessageSquare size={14} /> Chat Farmer
                   </button>
                 )}
               </div>
             </div>
 
             {/* Actions */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <div style={{ display: 'flex', gap: '0.65rem', alignItems: 'center', flexWrap: 'wrap' }}>
                 <div style={{ display: 'flex', alignItems: 'center', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', overflow: 'hidden' }}>
-                  <button onClick={() => setQuantity(Math.max(1, quantity - 1))} style={{ padding: '0.85rem 1rem', background: 'var(--color-surface-muted)' }}>-</button>
-                  <div style={{ padding: '0.85rem 1rem', fontWeight: 600, minWidth: '40px', textAlign: 'center' }}>{quantity}</div>
-                  <button onClick={() => setQuantity(quantity + 1)} style={{ padding: '0.85rem 1rem', background: 'var(--color-surface-muted)' }}>+</button>
+                  <button onClick={() => setQuantity(Math.max(1, quantity - 1))} style={{ padding: '0.65rem 0.85rem', background: 'var(--color-surface-muted)' }} aria-label="Decrease quantity">-</button>
+                  <div style={{ padding: '0.65rem 0.75rem', fontWeight: 600, minWidth: '36px', textAlign: 'center', fontSize: '0.9rem' }}>{quantity}</div>
+                  <button onClick={() => setQuantity(quantity + 1)} style={{ padding: '0.65rem 0.85rem', background: 'var(--color-surface-muted)' }} aria-label="Increase quantity">+</button>
                 </div>
                 <button
                   className="agrox-btn agrox-btn-primary"
-                  style={{ flex: 1, padding: '0.85rem', fontSize: '1.05rem' }}
+                  style={{ flex: 1, padding: '0.75rem', fontSize: '0.95rem' }}
                   onClick={() => {
                     addToCart(product, quantity);
                     onClose();
                   }}
                 >
-                  <ShoppingCart size={20} />
+                  <ShoppingCart size={18} />
                   <span>Add to Cart</span>
                 </button>
               </div>
               
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', justifyContent: 'center', padding: '0.75rem', background: 'rgba(67, 160, 71, 0.1)', color: 'var(--color-success)', borderRadius: 'var(--radius-md)', fontSize: '0.85rem', fontWeight: 600 }}>
-                <ShieldCheck size={16} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', justifyContent: 'center', padding: '0.55rem', background: 'rgba(67, 160, 71, 0.1)', color: 'var(--color-success)', borderRadius: 'var(--radius-md)', fontSize: '0.8rem', fontWeight: 600 }}>
+                <ShieldCheck size={15} />
                 AgroX Escrow Protected Payment
               </div>
             </div>

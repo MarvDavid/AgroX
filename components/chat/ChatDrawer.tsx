@@ -148,6 +148,7 @@ export default function ChatDrawer({
     <>
       <div className="agrox-drawer-backdrop" onClick={onClose} style={{ zIndex: 120 }} />
       <div
+        className="agrox-drawer"
         style={{
           position: 'fixed',
           top: 0,
