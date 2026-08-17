@@ -1,8 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
+import PageShell from '@/components/layout/PageShell';
 import ChatDrawer from '@/components/chat/ChatDrawer';
 import { 
   ShoppingBag, 
@@ -84,12 +83,9 @@ export default function BuyerDashboardPage() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--color-surface-muted)' }}>
-      <Navbar />
-
-      <main style={{ flex: 1, padding: '1.5rem 0' }} className="agrox-container">
+    <PageShell muted wide>
         {/* Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem' }}>
+        <div className="agrox-page-header">
           <div>
             <h1 style={{ fontSize: 'clamp(1.5rem, 4vw, 2rem)', fontWeight: 800, lineHeight: 1.2 }}>Buyer Command Center</h1>
             <p style={{ color: 'var(--color-text-secondary)', marginTop: '0.35rem', fontSize: '0.9rem', maxWidth: '650px' }}>
@@ -102,35 +98,34 @@ export default function BuyerDashboardPage() {
               setIsChatOpen(true);
             }}
             className="agrox-btn agrox-btn-primary"
-            style={{ width: 'auto' }}
           >
             <MessageSquare size={18} /> Open Direct Messages
           </button>
         </div>
 
         {/* Overview Stats */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: '1rem', marginBottom: '1.75rem' }}>
-          <div style={{ background: 'var(--color-surface)', padding: '1.15rem 1.25rem', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-sm)' }}>
-            <div style={{ color: 'var(--color-text-secondary)', fontSize: '0.825rem', fontWeight: 600, marginBottom: '0.25rem' }}>Active Escrow Orders</div>
-            <div style={{ fontSize: 'clamp(1.5rem, 3.5vw, 1.85rem)', fontWeight: 800, color: 'var(--color-action-primary)' }}>{orders.length}</div>
+        <div className="agrox-stat-grid">
+          <div className="agrox-stat-card">
+            <div className="agrox-stat-label">Active Escrow Orders</div>
+            <div className="agrox-stat-value" style={{ color: 'var(--color-action-primary)' }}>{orders.length}</div>
           </div>
-          <div style={{ background: 'var(--color-surface)', padding: '1.15rem 1.25rem', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-sm)' }}>
-            <div style={{ color: 'var(--color-text-secondary)', fontSize: '0.825rem', fontWeight: 600, marginBottom: '0.25rem' }}>Total Procurement Spent</div>
-            <div style={{ fontSize: 'clamp(1.35rem, 3.2vw, 1.85rem)', fontWeight: 800, wordBreak: 'break-word' }}>
+          <div className="agrox-stat-card">
+            <div className="agrox-stat-label">Total Procurement Spent</div>
+            <div className="agrox-stat-value">
               {formatCurrency(orders.reduce((acc, curr) => acc + curr.totalAmount, 0))}
             </div>
           </div>
-          <div style={{ background: 'var(--color-surface)', padding: '1.15rem 1.25rem', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-sm)' }}>
-            <div style={{ color: 'var(--color-text-secondary)', fontSize: '0.825rem', fontWeight: 600, marginBottom: '0.25rem' }}>Protected Escrow Vault</div>
-            <div style={{ fontSize: 'clamp(1.35rem, 3.2vw, 1.85rem)', fontWeight: 800, color: 'var(--color-success)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <ShieldCheck size={24} /> 100% Secured
+          <div className="agrox-stat-card">
+            <div className="agrox-stat-label">Protected Escrow Vault</div>
+            <div className="agrox-stat-value" style={{ color: 'var(--color-success)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <ShieldCheck size={24} style={{ flexShrink: 0 }} /> 100% Secured
             </div>
           </div>
         </div>
 
         {/* Order History Table / List */}
-        <div className="agrox-buyer-card" style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-border)', padding: '1.25rem', boxShadow: 'var(--shadow-sm)' }}>
-          <h2 style={{ fontSize: '1.15rem', fontWeight: 800, marginBottom: '1rem', borderBottom: '1px solid var(--color-border)', paddingBottom: '0.75rem' }}>
+        <div className="agrox-panel">
+          <h2 className="agrox-panel-title">
             Purchased Produce & Active Escrow Guarantees
           </h2>
 
@@ -169,13 +164,13 @@ export default function BuyerDashboardPage() {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
                     {order.items.map((item, idx) => (
                       <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.65rem', background: 'var(--color-surface)', padding: '0.75rem 0.85rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)' }}>
-                        <div style={{ flex: '1 1 200px' }}>
+                        <div style={{ flex: '1 1 200px', minWidth: 0, overflowWrap: 'anywhere' }}>
                           <div style={{ fontWeight: 700, fontSize: '0.925rem' }}>{item.productName}</div>
                           <div style={{ fontSize: '0.785rem', color: 'var(--color-text-secondary)', marginTop: '0.15rem' }}>
                             Seller: <strong>{item.farmerName}</strong> • Qty: {item.quantity} ({item.unit})
                           </div>
                         </div>
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem', flexWrap: 'wrap', width: 'auto' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem', flexWrap: 'wrap' }}>
                           <span style={{ fontWeight: 800, fontSize: '0.95rem', color: 'var(--color-text-primary)' }}>
                             {formatCurrency(item.price * item.quantity)}
                           </span>
@@ -204,9 +199,6 @@ export default function BuyerDashboardPage() {
             </div>
           )}
         </div>
-      </main>
-
-      <Footer />
 
       <ChatDrawer
         isOpen={isChatOpen}
@@ -214,6 +206,6 @@ export default function BuyerDashboardPage() {
         targetProduct={chatProduct}
         currentUser={{ id: 'buyer-001', name: 'John Doe Enterprise', role: 'buyer' }}
       />
-    </div>
+    </PageShell>
   );
 }

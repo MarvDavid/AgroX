@@ -29,7 +29,7 @@ export default function Navbar({
         <div className="agrox-nav-wrapper">
           {/* Logo */}
           <Link href="/" className="agrox-brand" aria-label="AgroX Homepage">
-            <img src="/header-logo-agroX.webp" alt="AgroX Logo" style={{ height: '36px', width: 'auto' }} />
+            <img src="/header-logo-agroX.webp" alt="AgroX Logo" />
           </Link>
 
           {/* Desktop Search bar */}
@@ -55,18 +55,18 @@ export default function Navbar({
                 className="agrox-cart-trigger visible-mobile"
                 onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
                 aria-label="Toggle mobile search"
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0.55rem', borderRadius: 'var(--radius-md)', background: 'var(--color-surface-muted)' }}
+                aria-expanded={isMobileSearchOpen}
               >
                 {isMobileSearchOpen ? <X size={18} /> : <Search size={18} />}
               </button>
             )}
 
-            <Link href="/buyer" className="agrox-btn agrox-btn-outline" title="Buyer Dashboard" aria-label="Buyer Dashboard" style={{ padding: '0.55rem 0.75rem' }}>
+            <Link href="/buyer" className="agrox-btn agrox-btn-outline agrox-btn-icon" title="Buyer Dashboard" aria-label="Buyer Dashboard">
               <LayoutDashboard size={18} />
               <span className="hidden-mobile">Buyer Dashboard</span>
             </Link>
 
-            <Link href="/seller" className="agrox-btn agrox-btn-outline" title="Farmer Portal" aria-label="Farmer Portal" style={{ padding: '0.55rem 0.75rem' }}>
+            <Link href="/seller" className="agrox-btn agrox-btn-outline agrox-btn-icon" title="Farmer Portal" aria-label="Farmer Portal">
               <Store size={18} />
               <span className="hidden-mobile">Farmer Portal</span>
             </Link>
@@ -77,7 +77,6 @@ export default function Navbar({
                 onClick={onOpenChat}
                 aria-label="Open Direct Messages"
                 title="Direct Chat"
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0.55rem', borderRadius: 'var(--radius-md)', background: 'var(--color-surface-muted)' }}
               >
                 <MessageSquare size={18} />
               </button>
@@ -87,7 +86,6 @@ export default function Navbar({
                 className="agrox-cart-trigger"
                 aria-label="Chat Inbox"
                 title="Chat Inbox"
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0.55rem', borderRadius: 'var(--radius-md)', background: 'var(--color-surface-muted)' }}
               >
                 <MessageSquare size={18} />
               </Link>
@@ -97,7 +95,6 @@ export default function Navbar({
               className="agrox-cart-trigger"
               onClick={() => setIsCartOpen(true)}
               aria-label="Open Cart"
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0.55rem', borderRadius: 'var(--radius-md)', background: 'var(--color-surface-muted)', position: 'relative' }}
             >
               <ShoppingBag size={18} />
               {totalItems > 0 && (
@@ -106,28 +103,30 @@ export default function Navbar({
             </button>
           </div>
         </div>
-
-        {/* Mobile Search Bar Dropdown */}
-        {isMobileSearchOpen && onSearchChange && (
-          <div style={{ padding: '0 0 0.85rem 0' }} className="visible-mobile">
-            <form onSubmit={handleSearchSubmit} style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-              <Search className="agrox-search-icon" size={18} />
-              <input
-                type="text"
-                autoFocus
-                placeholder="Search maize, tomatoes, machinery..."
-                className="agrox-search-input"
-                style={{ width: '100%', paddingLeft: '2.5rem' }}
-                value={searchValue}
-                onChange={(e) => {
-                  setSearchValue(e.target.value);
-                  onSearchChange(e.target.value);
-                }}
-              />
-            </form>
-          </div>
-        )}
       </div>
+
+      {/*
+        Mobile search overlays below the header instead of growing it, so
+        --header-height stays accurate for the sticky category strip beneath.
+      */}
+      {isMobileSearchOpen && onSearchChange && (
+        <div className="agrox-search-panel visible-mobile">
+          <form onSubmit={handleSearchSubmit}>
+            <Search className="agrox-search-icon" size={18} />
+            <input
+              type="text"
+              autoFocus
+              placeholder="Search maize, tomatoes, machinery..."
+              className="agrox-search-input"
+              value={searchValue}
+              onChange={(e) => {
+                setSearchValue(e.target.value);
+                onSearchChange(e.target.value);
+              }}
+            />
+          </form>
+        </div>
+      )}
     </header>
   );
 }

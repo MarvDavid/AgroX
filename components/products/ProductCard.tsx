@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import Image from 'next/image';
 import { Star, ShoppingCart, MapPin, CheckCircle2 } from 'lucide-react';
 import { Product } from '@/types';
 import { useCart } from '@/context/CartContext';
@@ -44,23 +43,25 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
         )}
       </div>
 
-      <div className="agrox-card-body" style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', flex: 1 }}>
+      {/* Layout (padding/flex) comes from .agrox-card-body so the <480px
+          padding reduction can apply — an inline padding here would kill it. */}
+      <div className="agrox-card-body">
         <h3
           className="agrox-card-title"
           onClick={() => onQuickView && onQuickView(product)}
-          style={{ cursor: 'pointer', fontSize: '1.1rem', fontWeight: 700, marginBottom: '0.35rem', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', lineHeight: 1.4 }}
+          style={{ cursor: 'pointer', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
         >
           {product.name}
         </h3>
 
         <div style={{ marginBottom: '1rem' }}>
-          <div className="agrox-price" style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--color-text-primary)' }}>{formatCurrency(product.price)}</div>
-          <div className="agrox-unit" style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)' }}>per {product.unit}</div>
+          <div className="agrox-price">{formatCurrency(product.price)}</div>
+          <div className="agrox-unit">per {product.unit}</div>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.85rem', color: 'var(--color-text-secondary)', marginBottom: '0.4rem' }}>
-          <MapPin size={14} />
-          <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{product.seller.location}</span>
+          <MapPin size={14} style={{ flexShrink: 0 }} />
+          <span style={{ minWidth: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{product.seller.location}</span>
           {product.seller.verified && (
             <CheckCircle2 size={14} style={{ color: 'var(--color-action-primary)', flexShrink: 0 }} />
           )}

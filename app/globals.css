@@ -8,22 +8,22 @@
   --primitive-green-800: #2E7D32; /* Primary / Deep Green */
   --primitive-green-400: #66BB6A; /* Secondary / Fresh Green */
   --primitive-green-100: #E8F5E9; /* Muted green for subtle backgrounds */
-  
+
   --primitive-yellow-800: #F9A825; /* Accent / Golden Yellow */
   --primitive-yellow-100: #FFF9C4; /* Muted accent */
-  
+
   --primitive-cream-50: #F8FAF5; /* Soft Cream / Background */
-  
+
   --primitive-charcoal-900: #263238; /* Foreground / Dark Charcoal */
   --primitive-charcoal-700: #455A64; /* Text muted */
   --primitive-charcoal-500: #78909C; /* Borders/Muted */
   --primitive-charcoal-200: #B0BEC5; /* Light borders */
   --primitive-charcoal-50:  #ECEFF1; /* Subtle surface */
-  
-  --primitive-success-600: #43A047; 
+
+  --primitive-success-600: #43A047;
   --primitive-error-600: #D32F2F;
   --primitive-white: #FFFFFF;
-  
+
   --primitive-glass-bg: rgba(255, 255, 255, 0.85);
   --primitive-glass-border: rgba(255, 255, 255, 0.3);
 
@@ -47,7 +47,7 @@
   --color-action-secondary-border: var(--primitive-charcoal-200);
 
   --color-accent: var(--primitive-yellow-800);
-  
+
   --color-success: var(--primitive-success-600);
   --color-error: var(--primitive-error-600);
 
@@ -70,7 +70,7 @@
   --card-background: var(--color-surface);
   --card-border: var(--color-border);
   --card-hover-border: var(--color-action-primary);
-  
+
   /* Inputs */
   --input-background: var(--color-surface);
   --input-border: var(--color-border);
@@ -80,7 +80,7 @@
   --navbar-background: var(--color-glass-bg);
   --navbar-border: var(--color-border);
 
-  /* Miscellaneous */
+  /* Spacing scale */
   --spacing-xs: 0.25rem;
   --spacing-sm: 0.5rem;
   --spacing-md: 1rem;
@@ -89,7 +89,7 @@
   --spacing-2xl: 3rem;
   --spacing-3xl: 4rem;
   --spacing-4xl: 6rem;
-  
+
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
@@ -98,33 +98,36 @@
   --radius-md: 0.625rem;
   --radius-lg: 1rem;
   --radius-full: 9999px;
-  --max-width: 1280px;
+
+  /* ==================================================
+     4. LAYOUT TOKENS
+     Breakpoints used throughout this file: 480 / 768 / 1024.
+     Ranges are written as max-width: 479.98px / 767.98px / 1023.98px so they
+     never overlap with their min-width counterparts.
+     ================================================== */
+  --header-height: 4rem;        /* kept in sync with .agrox-nav-wrapper */
+  --max-width: 1280px;          /* marketing / catalog */
+  --max-width-wide: 1440px;     /* dashboards, which carry tables + sidebars */
+  --sidebar-width: 260px;
+  --sidebar-width-chat: 300px;
+
+  /* Stacking order, single source of truth */
+  --z-subnav: 40;
+  --z-header: 50;
+  --z-drawer-backdrop: 100;
+  --z-drawer: 101;
+  --z-modal-backdrop: 110;
+  --z-modal: 111;
+  --z-toast: 200;
 }
 
-/* 
-@media (prefers-color-scheme: dark) {
+/* The header shrinks on mobile. Redefining the token here keeps every sticky
+   offset that derives from it correct, instead of hard-coding 4rem / 5.5rem. */
+@media (max-width: 767.98px) {
   :root {
-    --color-background: var(--primitive-charcoal-900);
-    --color-surface: #1e293b;
-    --color-surface-muted: #334155;
-    
-    --color-text-primary: var(--primitive-white);
-    --color-text-secondary: var(--primitive-charcoal-200);
-    --color-text-inverse: var(--primitive-charcoal-900);
-    
-    --color-border: #334155;
-    --color-border-subtle: rgba(255, 255, 255, 0.1);
-    
-    --color-action-primary: var(--primitive-green-400);
-    --color-action-primary-hover: var(--primitive-green-100);
-    --color-action-secondary: #334155;
-    --color-action-secondary-border: #475569;
-    
-    --color-glass-bg: rgba(30, 41, 59, 0.85);
-    --color-glass-border: rgba(255, 255, 255, 0.1);
+    --header-height: 3.75rem;
   }
 }
-*/
 
 * {
   box-sizing: border-box;
@@ -138,6 +141,8 @@ html, body {
   color: var(--color-text-primary);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  /* Contain any residual overflow instead of scrolling the whole page. */
+  overflow-x: hidden;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -163,7 +168,19 @@ button {
   font-family: inherit;
 }
 
-/* Container Utility */
+img {
+  max-width: 100%;
+}
+
+/* ==================================================
+   LAYOUT PRIMITIVES
+   Structure lives here so it can be responsive. Pages should not write
+   padding / max-width / grid-template inline — an inline style outranks
+   these rules and silently disables every media query below.
+   ================================================== */
+
+/* Horizontal gutter + centring. Never put an inline `padding` shorthand on an
+   element carrying this class: it resets all four sides and kills the gutter. */
 .agrox-container {
   width: 100%;
   max-width: var(--max-width);
@@ -171,30 +188,248 @@ button {
   padding: 0 var(--spacing-md);
 }
 
+/* Full-page column: header, content, footer. */
+.agrox-shell {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.agrox-shell--muted {
+  background: var(--color-surface-muted);
+}
+
+/* Uncontained main region — child sections supply their own .agrox-container. */
+.agrox-main {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+}
+
+/* Contained main region: gutter + centring + vertical rhythm in one class. */
+.agrox-page {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding-inline: var(--spacing-md);
+  padding-block: var(--spacing-lg);
+}
+
+.agrox-page--wide {
+  max-width: var(--max-width-wide);
+}
+
+/* Vertically centres a single card in the viewport (checkout success state). */
+.agrox-page-center {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Title + action row, repeated on every dashboard. */
+.agrox-page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.agrox-page-header > * {
+  min-width: 0;
+}
+
+/* Surface card used for every dashboard panel, checkout form and summary. */
+.agrox-panel {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--spacing-md);
+  min-width: 0;
+}
+
+.agrox-panel-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  margin-bottom: var(--spacing-md);
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* Stat tiles. */
+.agrox-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.agrox-stat-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--spacing-md) var(--spacing-lg);
+  min-width: 0;
+}
+
+.agrox-stat-label {
+  color: var(--color-text-secondary);
+  font-size: 0.825rem;
+  font-weight: 600;
+  margin-bottom: var(--spacing-xs);
+}
+
+.agrox-stat-value {
+  font-size: clamp(1.35rem, 3.2vw, 1.85rem);
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+/* Dashboard sidebar + content. One width, one breakpoint, for seller & admin. */
+.agrox-dash-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--spacing-lg);
+}
+
+.agrox-dash-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  height: fit-content;
+  min-width: 0;
+}
+
+.agrox-dash-main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  min-width: 0;
+}
+
+/* Wide content (tables) must scroll inside its own box, never widen the page. */
+.agrox-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.agrox-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.agrox-table th,
+.agrox-table td {
+  padding: var(--spacing-md) var(--spacing-lg);
+  white-space: nowrap;
+}
+
+/* Horizontal chip/tab scroller. */
+.agrox-scroller {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.agrox-scroller::-webkit-scrollbar {
+  display: none;
+}
+
+/* Generic form field. Distinct from .agrox-search-input, which reserves a
+   2.75rem left inset for its icon and was previously reused for plain inputs. */
+.agrox-input {
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--input-border);
+  background: var(--input-background);
+  color: var(--color-text-primary);
+  font-family: inherit;
+  font-size: 0.925rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.agrox-input:focus {
+  outline: none;
+  border-color: var(--input-border-focus);
+  box-shadow: 0 0 0 3px var(--color-border-subtle);
+}
+
+textarea.agrox-input {
+  resize: vertical;
+  min-height: 5rem;
+}
+
+.agrox-label {
+  display: block;
+  font-size: 0.825rem;
+  font-weight: 600;
+  margin-bottom: var(--spacing-xs);
+}
+
+@media (min-width: 480px) {
+  .agrox-panel {
+    padding: var(--spacing-lg);
+  }
+}
+
 @media (min-width: 768px) {
   .agrox-container {
     padding: 0 var(--spacing-xl);
   }
+
+  .agrox-page {
+    padding-inline: var(--spacing-xl);
+  }
+
+  .agrox-panel {
+    padding: var(--spacing-xl);
+  }
 }
 
-/* Header & Glass Navigation */
+@media (min-width: 1024px) {
+  .agrox-dash-grid {
+    grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+    gap: var(--spacing-xl);
+  }
+
+  .agrox-dash-sidebar {
+    position: sticky;
+    top: calc(var(--header-height) + var(--spacing-lg));
+  }
+}
+
+/* ==================================================
+   HEADER & GLASS NAVIGATION
+   ================================================== */
 .agrox-header {
   position: sticky;
   top: 0;
-  z-index: 50;
+  z-index: var(--z-header);
   background: var(--navbar-background);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--navbar-border);
-  transition: all 0.3s ease;
+  transition: background 0.3s ease;
 }
 
 .agrox-nav-wrapper {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 4rem;
-  gap: 1.5rem;
+  height: var(--header-height);
+  gap: var(--spacing-lg);
 }
 
 .agrox-brand {
@@ -204,6 +439,12 @@ button {
   font-size: 1.5rem;
   font-weight: 800;
   color: var(--color-action-primary);
+  flex-shrink: 0;
+}
+
+.agrox-brand img {
+  height: 36px;
+  width: auto;
 }
 
 .agrox-brand-icon {
@@ -221,6 +462,7 @@ button {
 /* Search Bar */
 .agrox-search-form {
   flex: 1;
+  min-width: 0;
   max-width: 550px;
   position: relative;
   display: flex;
@@ -234,7 +476,8 @@ button {
   border: 1px solid var(--input-border);
   background: var(--input-background);
   font-size: 0.925rem;
-  transition: all 0.2s ease;
+  font-family: inherit;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
   box-shadow: var(--shadow-sm);
   color: var(--color-text-primary);
 }
@@ -248,22 +491,44 @@ button {
 .agrox-search-icon {
   position: absolute;
   left: 0.9rem;
+  top: 50%;
+  transform: translateY(-50%);
   color: var(--color-text-secondary);
   pointer-events: none;
+}
+
+/* Mobile search panel. Overlays below the header rather than growing it, so
+   --header-height stays accurate for everything sticking beneath it. */
+.agrox-search-panel {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  padding: var(--spacing-sm) var(--spacing-md) var(--spacing-md);
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: var(--shadow-md);
+}
+
+.agrox-search-panel form {
+  position: relative;
+  display: flex;
+  align-items: center;
 }
 
 /* Nav Actions */
 .agrox-nav-actions {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: var(--spacing-md);
+  flex-shrink: 0;
 }
 
 .agrox-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: var(--spacing-sm);
   padding: 0.625rem 1.25rem;
   border-radius: var(--radius-md);
   font-weight: 600;
@@ -294,11 +559,19 @@ button {
   border-color: var(--color-border);
 }
 
+/* Compact icon-only variant used across the nav. */
+.agrox-btn-icon {
+  padding: 0.55rem 0.75rem;
+}
+
 .agrox-cart-trigger {
   position: relative;
-  padding: 0.6rem;
-  border-radius: var(--radius-full);
-  background: var(--card-background);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.55rem;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-muted);
   border: 1px solid var(--card-border);
   color: var(--color-text-primary);
   transition: all 0.2s ease;
@@ -328,35 +601,39 @@ button {
   box-shadow: 0 2px 5px rgba(217, 119, 6, 0.4);
 }
 
-/* Category Strip */
+/* ==================================================
+   CATEGORY STRIP
+   The sticky bar spans full width; the list inside it is the scroll container
+   and carries the same gutter as .agrox-container (not nested inside one).
+   ================================================== */
 .agrox-category-strip {
   background: var(--color-surface);
   border-bottom: 1px solid var(--color-border);
-  overflow-x: auto;
-  white-space: nowrap;
   position: sticky;
-  top: 4rem;
-  z-index: 40;
+  top: var(--header-height);
+  z-index: var(--z-subnav);
 }
 
 .agrox-category-list {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.75rem var(--spacing-md);
   list-style: none;
+  width: 100%;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0.75rem var(--spacing-md);
 }
 
-@media (min-width: 768px) {
-  .agrox-category-list {
-    padding: 1rem var(--spacing-xl);
-  }
+.agrox-category-item {
+  flex-shrink: 0;
 }
 
 .agrox-category-item button {
   color: var(--color-text-secondary);
   font-size: 0.875rem;
   font-weight: 600;
+  white-space: nowrap;
   transition: all 0.2s ease;
   padding: 0.4rem 1.15rem;
   border-radius: var(--radius-full);
@@ -375,13 +652,15 @@ button {
   border-color: var(--color-action-primary);
 }
 
-/* Hero Banner */
+/* ==================================================
+   HERO
+   ================================================== */
 .agrox-hero {
   background: linear-gradient(135deg, var(--primitive-green-900) 0%, var(--primitive-green-800) 50%, var(--primitive-green-900) 100%);
   color: var(--primitive-white);
-  padding: 2.5rem 2.5rem;
+  padding: var(--spacing-lg);
   border-radius: var(--radius-lg);
-  margin: var(--spacing-lg) auto;
+  margin-block: var(--spacing-lg);
   position: relative;
   overflow: hidden;
 }
@@ -391,21 +670,21 @@ button {
   position: absolute;
   top: -50%;
   right: -20%;
-  width: 600px;
-  height: 600px;
+  width: min(600px, 90%);
+  aspect-ratio: 1;
   background: radial-gradient(circle, rgba(245, 158, 11, 0.2) 0%, rgba(255,255,255,0) 70%);
   pointer-events: none;
 }
 
 .agrox-hero-grid {
   display: grid;
-  grid-template-columns: 45% 1fr;
-  gap: 2.5rem;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--spacing-lg);
   align-items: center;
 }
 
 .agrox-hero-title {
-  font-size: 2.75rem;
+  font-size: clamp(1.6rem, 4vw, 2.75rem);
   font-weight: 800;
   line-height: 1.15;
   color: var(--primitive-white);
@@ -415,33 +694,107 @@ button {
 .agrox-hero-subtitle {
   font-size: 1rem;
   color: rgba(255, 255, 255, 0.9);
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--spacing-lg);
   max-width: 500px;
 }
 
 .agrox-hero-cta {
   display: flex;
-  gap: 1rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
 }
 
-/* Checkout */
-.agrox-checkout-grid {
+.agrox-hero-stats {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 2.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 110px), 1fr));
+  gap: 0.75rem;
+  margin-top: var(--spacing-lg);
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--color-glass-border);
 }
-@media (min-width: 992px) {
-  .agrox-checkout-grid {
-    grid-template-columns: 1.5fr 1fr;
+
+.agrox-hero-stat-value {
+  font-size: clamp(1.15rem, 2.5vw, 1.5rem);
+  font-weight: 800;
+}
+
+.agrox-hero-stat-label {
+  font-size: 0.75rem;
+  opacity: 0.85;
+  line-height: 1.2;
+}
+
+.agrox-hero-media {
+  position: relative;
+  min-width: 0;
+}
+
+.agrox-hero-media img {
+  width: 100%;
+  max-height: 320px;
+  object-fit: cover;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+}
+
+/* ==================================================
+   CHAT INBOX
+   The page is a flex column so the inbox can take the remaining height. That
+   replaces the old height: calc(100vh - 220px) + min-height: 520px, which
+   overflowed short phones and pushed the composer below the fold.
+   ================================================== */
+.agrox-chat-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.agrox-chat-inbox-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  flex: 1;
+  min-height: 24rem;
+}
+
+.agrox-chat-thread-list,
+.agrox-chat-panel {
+  display: flex;
+}
+
+@media (max-width: 767.98px) {
+  .agrox-chat-thread-list.agrox-mobile-hidden,
+  .agrox-chat-panel.agrox-mobile-hidden {
+    display: none;
   }
 }
 
-/* Product Grid & Cards */
+@media (min-width: 768px) {
+  .agrox-chat-inbox-grid {
+    grid-template-columns: minmax(0, var(--sidebar-width-chat)) minmax(0, 1fr);
+  }
+}
+
+/* ==================================================
+   CHECKOUT
+   ================================================== */
+.agrox-checkout-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--spacing-xl);
+}
+
+.agrox-checkout-summary-wrap {
+  min-width: 0;
+}
+
+/* ==================================================
+   PRODUCT GRID & CARDS
+   ================================================== */
 .agrox-product-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
-  gap: 1.75rem;
-  margin: 2rem 0;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 270px), 1fr));
+  gap: var(--spacing-lg);
+  margin-block: var(--spacing-xl);
 }
 
 .agrox-card {
@@ -449,9 +802,10 @@ button {
   border-radius: var(--radius-lg);
   border: 1px solid var(--card-border);
   overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease, border-color 0.3s ease;
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .agrox-card:hover {
@@ -483,7 +837,7 @@ button {
   position: absolute;
   top: 0.75rem;
   left: 0.75rem;
-  background: rgba(27, 94, 32, 0.85); /* primitive green-900 with opacity */
+  background: rgba(27, 94, 32, 0.85);
   color: var(--primitive-white);
   backdrop-filter: blur(4px);
   font-size: 0.75rem;
@@ -497,6 +851,7 @@ button {
   display: flex;
   flex-direction: column;
   flex: 1;
+  min-width: 0;
 }
 
 .agrox-card-category {
@@ -511,8 +866,9 @@ button {
   font-size: 1.1rem;
   font-weight: 700;
   color: var(--color-text-primary);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.35rem;
   line-height: 1.35;
+  overflow-wrap: anywhere;
 }
 
 .agrox-card-seller {
@@ -522,6 +878,7 @@ button {
   align-items: center;
   gap: 0.35rem;
   margin-bottom: 0.85rem;
+  min-width: 0;
 }
 
 .agrox-card-footer {
@@ -529,6 +886,7 @@ button {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: var(--spacing-sm);
   padding-top: 0.75rem;
   border-top: 1px solid var(--color-border-subtle);
 }
@@ -536,7 +894,7 @@ button {
 .agrox-price {
   font-size: 1.25rem;
   font-weight: 800;
-  color: var(--color-action-primary-hover);
+  color: var(--color-text-primary);
 }
 
 .agrox-unit {
@@ -545,7 +903,9 @@ button {
   font-weight: 400;
 }
 
-/* Animations */
+/* ==================================================
+   ANIMATIONS
+   ================================================== */
 @keyframes spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
@@ -555,13 +915,15 @@ button {
   animation: spin 1s linear infinite;
 }
 
-/* Slide Drawer */
+/* ==================================================
+   DRAWERS & MODALS
+   ================================================== */
 .agrox-drawer-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5); /* overlay */
+  background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(4px);
-  z-index: 100;
+  z-index: var(--z-drawer-backdrop);
   animation: fadeIn 0.2s ease;
 }
 
@@ -573,17 +935,87 @@ button {
   width: 100%;
   max-width: 440px;
   background: var(--color-surface);
-  z-index: 101;
+  z-index: var(--z-drawer);
   box-shadow: -10px 0 30px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
   animation: slideLeft 0.3s ease;
 }
 
-@media (max-width: 480px) {
-  .agrox-drawer {
-    max-width: 100vw;
-  }
+/* Consistent inset for every row inside a drawer. */
+.agrox-drawer-section {
+  padding: var(--spacing-md) var(--spacing-lg);
+  flex-shrink: 0;
+}
+
+.agrox-drawer-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--spacing-lg);
+}
+
+/* Modal shell: fixed header keeps the close button reachable while the body
+   scrolls. Previously the close button was absolutely positioned inside the
+   scroll box and disappeared on tall mobile content. */
+.agrox-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: calc(100% - (2 * var(--spacing-md)));
+  max-width: 640px;
+  max-height: 90dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  z-index: var(--z-modal);
+}
+
+.agrox-modal--lg {
+  max-width: 780px;
+}
+
+.agrox-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.agrox-modal-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.agrox-modal-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0.4rem;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-muted);
+  color: var(--color-text-primary);
+}
+
+.agrox-modal-close:hover {
+  background: var(--color-border);
+}
+
+.agrox-modal-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--spacing-lg);
 }
 
 @keyframes slideLeft {
@@ -596,19 +1028,21 @@ button {
   to { opacity: 1; }
 }
 
-/* Toast */
+/* ==================================================
+   TOAST
+   ================================================== */
 .agrox-toast {
   position: fixed;
-  bottom: 1.5rem;
-  right: 1.5rem;
+  bottom: calc(var(--spacing-lg) + env(safe-area-inset-bottom, 0px));
+  right: var(--spacing-lg);
   left: auto;
-  max-width: calc(100vw - 3rem);
+  max-width: min(28rem, calc(100% - (2 * var(--spacing-lg))));
   background: var(--color-text-primary);
   color: var(--color-text-inverse);
   padding: 0.85rem 1.25rem;
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-xl);
-  z-index: 200;
+  z-index: var(--z-toast);
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -616,27 +1050,19 @@ button {
   border-left: 4px solid var(--color-success);
 }
 
-@media (max-width: 480px) {
-  .agrox-toast {
-    left: 1rem;
-    right: 1rem;
-    bottom: 1rem;
-    max-width: none;
-    font-size: 0.875rem;
-  }
-}
-
 @keyframes slideUp {
   from { transform: translateY(20px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
 
-/* Marquee */
+/* ==================================================
+   MARQUEE
+   ================================================== */
 .agrox-marquee {
   width: 100%;
   max-width: 400px;
   overflow: hidden;
-  margin-bottom: 1rem;
+  margin-bottom: var(--spacing-md);
   white-space: nowrap;
   -webkit-mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
   mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
@@ -658,35 +1084,14 @@ button {
   100% { transform: translateX(-100%); }
 }
 
-/* Responsive utilities */
-.hidden-mobile {
-  display: inline;
-}
-
-.visible-mobile {
-  display: none !important;
-}
-
-.hidden-desktop {
-  display: none !important;
-}
-
-/* Category Strip touch optimization */
-.agrox-category-strip {
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-}
-
-.agrox-category-strip::-webkit-scrollbar {
-  display: none;
-}
-
-/* Responsive Segmented Tabs Bar */
+/* ==================================================
+   SEGMENTED TAB STRIP
+   ================================================== */
 .agrox-tab-strip {
   display: flex;
-  gap: 0.5rem;
+  gap: var(--spacing-sm);
   overflow-x: auto;
-  padding: 0.5rem;
+  padding: var(--spacing-sm);
   background: var(--color-surface);
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-border);
@@ -701,12 +1106,13 @@ button {
 .agrox-tab-chip {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--spacing-sm);
   padding: 0.55rem 0.95rem;
   border-radius: var(--radius-md);
   font-size: 0.85rem;
   font-weight: 600;
   white-space: nowrap;
+  flex-shrink: 0;
   transition: all 0.2s;
   border: 1px solid transparent;
   color: var(--color-text-secondary);
@@ -719,70 +1125,125 @@ button {
   font-weight: 700;
 }
 
-/* Responsive Breakpoint Queries */
-@media (max-width: 768px) {
+/* ==================================================
+   VISIBILITY UTILITIES
+   These only ever set `display: none`. They must never set a *shown* display
+   value: doing so overrides whatever display the element's own class or inline
+   style needs (flex, inline-flex, block), which silently breaks gap,
+   flex-direction, align-items and overflow on the element.
+   ================================================== */
+@media (max-width: 767.98px) {
   .hidden-mobile {
     display: none !important;
   }
-  
+}
+
+@media (min-width: 768px) {
   .visible-mobile {
-    display: block !important;
+    display: none !important;
   }
+}
 
-  .hidden-desktop {
-    display: block !important;
-  }
-
-  .agrox-hero-grid {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-  }
-
+/* ==================================================
+   RESPONSIVE OVERRIDES
+   ================================================== */
+@media (max-width: 767.98px) {
   .agrox-hero {
-    padding: 1.75rem 1.25rem;
-    margin: var(--spacing-sm) auto;
-  }
-
-  .agrox-hero-title {
-    font-size: 1.85rem;
-  }
-
-  .agrox-product-grid {
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr));
-    gap: 1.25rem;
-    margin: 1.25rem 0;
+    margin-block: var(--spacing-md);
   }
 
   .agrox-nav-wrapper {
     gap: 0.75rem;
-    height: 3.75rem;
-  }
-
-  .agrox-brand img {
-    height: 30px !important;
   }
 
   .agrox-nav-actions {
-    gap: 0.5rem;
+    gap: var(--spacing-sm);
+  }
+
+  .agrox-brand img {
+    height: 30px;
   }
 
   .agrox-btn {
     padding: 0.55rem 0.85rem;
     font-size: 0.85rem;
   }
-}
 
-@media (max-width: 480px) {
-  .agrox-hero-title {
-    font-size: 1.6rem;
-  }
-
-  .agrox-card-body {
-    padding: 1rem;
+  .agrox-btn-icon {
+    padding: 0.55rem 0.65rem;
   }
 
   .agrox-product-grid {
-    grid-template-columns: 1fr;
+    gap: 1.25rem;
+    margin-block: 1.25rem;
   }
 }
 
+@media (min-width: 768px) {
+  .agrox-category-list {
+    padding: var(--spacing-md) var(--spacing-xl);
+  }
+
+  .agrox-hero {
+    padding: var(--spacing-xl);
+  }
+
+  .agrox-modal-header {
+    padding: var(--spacing-md) var(--spacing-xl);
+  }
+
+  .agrox-modal-body {
+    padding: var(--spacing-xl);
+  }
+}
+
+@media (min-width: 1024px) {
+  .agrox-hero {
+    padding: var(--spacing-2xl);
+  }
+
+  .agrox-hero-grid {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    gap: var(--spacing-2xl);
+  }
+
+  .agrox-checkout-grid {
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  }
+
+  .agrox-checkout-summary-wrap {
+    position: sticky;
+    top: calc(var(--header-height) + var(--spacing-lg));
+    height: fit-content;
+  }
+}
+
+@media (max-width: 479.98px) {
+  .agrox-card-body {
+    padding: var(--spacing-md);
+  }
+
+  .agrox-product-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .agrox-drawer {
+    max-width: 100%;
+  }
+
+  .agrox-drawer-section {
+    padding: var(--spacing-md);
+  }
+
+  .agrox-drawer-body {
+    padding: var(--spacing-md);
+  }
+
+  .agrox-toast {
+    left: var(--spacing-md);
+    right: var(--spacing-md);
+    bottom: calc(var(--spacing-md) + env(safe-area-inset-bottom, 0px));
+    max-width: none;
+    font-size: 0.875rem;
+  }
+}

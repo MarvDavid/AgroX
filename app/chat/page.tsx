@@ -1,20 +1,16 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
-import { 
-  MessageSquare, 
-  Send, 
-  User, 
-  Store, 
-  ShieldCheck, 
-  RefreshCw, 
+import PageShell from '@/components/layout/PageShell';
+import {
+  MessageSquare,
+  Send,
+  User,
+  Store,
+  ShieldCheck,
   Search,
-  ChevronRight,
   ArrowLeft
 } from 'lucide-react';
-import Link from 'next/link';
 import { ChatMessage, ChatThread } from '@/types';
 
 export default function DedicatedChatPage() {
@@ -116,12 +112,11 @@ export default function DedicatedChatPage() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--color-surface-muted)' }}>
-      <Navbar />
-
-      <main style={{ flex: 1, padding: '1.5rem 0' }} className="agrox-container">
+    // No footer: the inbox flexes to fill the remaining viewport height, which
+    // is what replaces the old calc(100vh - 220px) magic number.
+    <PageShell muted wide footer={false} mainClassName="agrox-chat-page">
         {/* Role Toggle Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.25rem' }}>
+        <div className="agrox-page-header">
           <div>
             <h1 style={{ fontSize: 'clamp(1.4rem, 3.5vw, 1.75rem)', fontWeight: 800, lineHeight: 1.25 }}>AgroX Direct Messaging Inbox</h1>
             <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.85rem', marginTop: '0.2rem' }}>
@@ -160,25 +155,23 @@ export default function DedicatedChatPage() {
           </div>
         </div>
 
-        {/* Full Inbox Interface Grid */}
+        {/* Full Inbox Interface Grid. Height comes from `flex: 1` inside
+            .agrox-chat-page rather than a hard-coded viewport calculation, so
+            the composer is always reachable without scrolling the document. */}
         <div
+          className="agrox-chat-inbox-grid"
           style={{
-            display: 'grid',
-            height: 'calc(100vh - 220px)',
-            minHeight: '520px',
-            maxHeight: '680px',
             background: 'var(--color-surface)',
             borderRadius: 'var(--radius-lg)',
             border: '1px solid var(--color-border)',
             overflow: 'hidden',
             boxShadow: 'var(--shadow-lg)',
           }}
-          className="agrox-chat-inbox-grid"
         >
           {/* Thread List Sidebar */}
           <div
             className={`agrox-chat-thread-list ${mobileView === 'chat' ? 'agrox-mobile-hidden' : ''}`}
-            style={{ borderRight: '1px solid var(--color-border)', display: 'flex', flexDirection: 'column', background: 'var(--color-surface-muted)' }}
+            style={{ borderRight: '1px solid var(--color-border)', flexDirection: 'column', minWidth: 0, minHeight: 0, background: 'var(--color-surface-muted)' }}
           >
             <div style={{ padding: '1rem', borderBottom: '1px solid var(--color-border)', background: 'var(--color-surface)' }}>
               <div style={{ fontWeight: 800, fontSize: '0.95rem', marginBottom: '0.5rem' }}>Active Conversations ({threads.length})</div>
@@ -186,12 +179,12 @@ export default function DedicatedChatPage() {
                 <Search size={15} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-secondary)' }} />
                 <input
                   type="text"
+                  aria-label="Search chats"
                   placeholder="Search chats..."
+                  className="agrox-input"
                   style={{
-                    width: '100%',
-                    padding: '0.45rem 0.5rem 0.45rem 2.1rem',
-                    borderRadius: 'var(--radius-md)',
-                    border: '1px solid var(--color-border)',
+                    paddingLeft: '2.1rem',
+                    paddingBlock: '0.45rem',
                     fontSize: '0.825rem',
                     background: 'var(--color-surface-muted)',
                   }}
@@ -221,13 +214,13 @@ export default function DedicatedChatPage() {
                         transition: 'all 0.15s',
                       }}
                     >
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.2rem' }}>
-                        <div style={{ fontWeight: 700, fontSize: '0.875rem' }}>{partnerName}</div>
-                        <span style={{ fontSize: '0.675rem', color: 'var(--color-text-secondary)' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.5rem', marginBottom: '0.2rem' }}>
+                        <div style={{ fontWeight: 700, fontSize: '0.875rem', minWidth: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{partnerName}</div>
+                        <span style={{ fontSize: '0.675rem', color: 'var(--color-text-secondary)', flexShrink: 0 }}>
                           {new Date(t.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </span>
                       </div>
-                      <div style={{ fontSize: '0.785rem', color: 'var(--color-action-primary)', fontWeight: 600, marginBottom: '0.15rem' }}>
+                      <div style={{ fontSize: '0.785rem', color: 'var(--color-action-primary)', fontWeight: 600, marginBottom: '0.15rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {t.productName || 'General Produce'}
                       </div>
                       <div style={{ fontSize: '0.785rem', color: 'var(--color-text-secondary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
@@ -243,26 +236,26 @@ export default function DedicatedChatPage() {
           {/* Active Chat Conversation Panel */}
           <div
             className={`agrox-chat-panel ${mobileView === 'list' ? 'agrox-mobile-hidden' : ''}`}
-            style={{ display: 'flex', flexDirection: 'column', background: 'var(--color-surface)' }}
+            style={{ flexDirection: 'column', minWidth: 0, minHeight: 0, background: 'var(--color-surface)' }}
           >
             {activeThread ? (
               <>
                 {/* Header with Mobile Back Button */}
                 <div style={{ padding: '0.75rem 1rem', borderBottom: '1px solid var(--color-border)', background: 'var(--color-surface-muted)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.5rem' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', minWidth: 0 }}>
                     <button
                       onClick={() => setMobileView('list')}
                       className="agrox-btn agrox-btn-outline visible-mobile"
-                      style={{ padding: '0.35rem 0.6rem', fontSize: '0.75rem' }}
+                      style={{ flexShrink: 0, padding: '0.35rem 0.6rem', fontSize: '0.75rem' }}
                       aria-label="Back to chat list"
                     >
                       <ArrowLeft size={16} />
                     </button>
-                    <div>
-                      <h3 style={{ fontSize: '0.95rem', fontWeight: 800, lineHeight: 1.2 }}>
+                    <div style={{ minWidth: 0 }}>
+                      <h3 style={{ fontSize: '0.95rem', fontWeight: 800, lineHeight: 1.2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {role === 'buyer' ? activeThread.farmerName : activeThread.buyerName}
                       </h3>
-                      <div style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', marginTop: '0.1rem' }}>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', marginTop: '0.1rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         Item: <strong>{activeThread.productName}</strong>
                       </div>
                     </div>
@@ -273,7 +266,7 @@ export default function DedicatedChatPage() {
                 </div>
 
                 {/* Messages Body */}
-                <div style={{ flex: 1, overflowY: 'auto', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                   {messages.map((msg) => {
                     const isMe = msg.senderId === currentUser.id;
                     return (
@@ -298,12 +291,14 @@ export default function DedicatedChatPage() {
                 <form onSubmit={handleSendMessage} style={{ padding: '0.85rem 1rem', borderTop: '1px solid var(--color-border)', display: 'flex', gap: '0.5rem', background: 'var(--color-surface)' }}>
                   <input
                     type="text"
+                    aria-label="Message"
                     placeholder="Type message..."
                     value={inputText}
                     onChange={(e) => setInputText(e.target.value)}
-                    style={{ flex: 1, padding: '0.65rem 0.85rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)', fontSize: '0.875rem', outline: 'none', background: 'var(--color-surface-muted)' }}
+                    className="agrox-input"
+                    style={{ flex: 1, minWidth: 0, fontSize: '0.875rem', background: 'var(--color-surface-muted)' }}
                   />
-                  <button type="submit" disabled={!inputText.trim()} className="agrox-btn agrox-btn-primary" style={{ padding: '0.65rem 1rem', opacity: inputText.trim() ? 1 : 0.5 }}>
+                  <button type="submit" disabled={!inputText.trim()} className="agrox-btn agrox-btn-primary" style={{ flexShrink: 0, padding: '0.65rem 1rem', opacity: inputText.trim() ? 1 : 0.5 }}>
                     <Send size={16} /> <span className="hidden-mobile">Send</span>
                   </button>
                 </form>
@@ -316,26 +311,6 @@ export default function DedicatedChatPage() {
             )}
           </div>
         </div>
-      </main>
-
-      <Footer />
-
-      <style dangerouslySetInnerHTML={{__html: `
-        .agrox-chat-inbox-grid { grid-template-columns: 1fr; }
-        @media(max-width: 767px) {
-          .agrox-chat-thread-list.agrox-mobile-hidden,
-          .agrox-chat-panel.agrox-mobile-hidden {
-            display: none !important;
-          }
-        }
-        @media(min-width: 768px) {
-          .agrox-chat-inbox-grid { grid-template-columns: 300px 1fr; }
-          .agrox-chat-thread-list,
-          .agrox-chat-panel {
-            display: flex !important;
-          }
-        }
-      `}} />
-    </div>
+    </PageShell>
   );
 }

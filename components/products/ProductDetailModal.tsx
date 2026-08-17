@@ -23,51 +23,27 @@ export default function ProductDetailModal({ product, onClose, onChatFarmer }: P
       <div
         className="agrox-drawer-backdrop"
         onClick={onClose}
-        style={{ zIndex: 110 }}
+        style={{ zIndex: 'var(--z-modal-backdrop)' }}
       />
-      <div
-        className="agrox-modal-dialog"
-        style={{
-          position: 'fixed',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: '94%',
-          maxWidth: '780px',
-          maxHeight: '90vh',
-          background: 'var(--color-surface)',
-          borderRadius: 'var(--radius-lg)',
-          boxShadow: 'var(--shadow-xl)',
-          zIndex: 111,
-          overflowY: 'auto',
-          padding: '1.25rem',
-        }}
-      >
-        <button
-          onClick={onClose}
-          style={{
-            position: 'absolute',
-            top: '0.85rem',
-            right: '0.85rem',
-            background: 'var(--color-surface-muted)',
-            borderRadius: '9999px',
-            padding: '0.4rem',
-            color: 'var(--color-text-secondary)',
-            zIndex: 10,
-          }}
-          aria-label="Close modal"
-        >
-          <X size={18} />
-        </button>
+      {/* .agrox-modal is a flex column: the header never scrolls, so the close
+          button stays reachable on tall mobile content. */}
+      <div className="agrox-modal agrox-modal--lg" role="dialog" aria-modal="true" aria-label={product.name}>
+        <div className="agrox-modal-header">
+          <h2 className="agrox-modal-title">{product.name}</h2>
+          <button onClick={onClose} className="agrox-modal-close" aria-label="Close modal">
+            <X size={18} />
+          </button>
+        </div>
 
         <div
+          className="agrox-modal-body"
           style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
             gap: '1.25rem',
           }}
         >
-          <div>
+          <div style={{ minWidth: 0 }}>
             <img
               src={product.image}
               alt={product.name}
@@ -80,13 +56,10 @@ export default function ProductDetailModal({ product, onClose, onChatFarmer }: P
             />
           </div>
 
-          <div>
+          <div style={{ minWidth: 0 }}>
             <span className="agrox-card-category">{product.category}</span>
-            <h2 style={{ fontSize: 'clamp(1.25rem, 3.5vw, 1.65rem)', fontWeight: 800, margin: '0.2rem 0 0.4rem', lineHeight: 1.25 }}>
-              {product.name}
-            </h2>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.75rem', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', margin: '0.4rem 0 0.75rem', flexWrap: 'wrap' }}>
               <div style={{ display: 'flex', alignItems: 'center', color: 'var(--color-accent)' }}>
                 <Star size={15} fill="currentColor" />
                 <span style={{ fontWeight: 700, marginLeft: '0.25rem', color: 'var(--color-text-primary)', fontSize: '0.9rem' }}>
@@ -122,13 +95,13 @@ export default function ProductDetailModal({ product, onClose, onChatFarmer }: P
             >
               <div style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', marginBottom: '0.2rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Verified Farmer</div>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
-                <div>
+                <div style={{ minWidth: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 700, fontSize: '0.95rem' }}>
-                    <ShieldCheck size={16} style={{ color: 'var(--color-success)' }} />
-                    <span>{product.seller.name}</span>
+                    <ShieldCheck size={16} style={{ color: 'var(--color-success)', flexShrink: 0 }} />
+                    <span style={{ minWidth: 0, overflowWrap: 'anywhere' }}>{product.seller.name}</span>
                   </div>
                   <div style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', marginTop: '0.15rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                    <MapPin size={13} />
+                    <MapPin size={13} style={{ flexShrink: 0 }} />
                     {product.seller.location}
                   </div>
                 </div>

@@ -6,17 +6,17 @@ import { Sprout, Mail, Phone, MapPin, Shield, Truck, Award } from 'lucide-react'
 
 export default function Footer() {
   return (
-    <footer style={{ background: 'var(--primitive-charcoal-900)', color: 'var(--primitive-white)', marginTop: '3.5rem', paddingTop: '2.5rem' }}>
+    <footer style={{ background: 'var(--primitive-charcoal-900)', color: 'var(--primitive-white)', marginTop: 'var(--spacing-3xl)', paddingBlock: 'var(--spacing-xl)' }}>
       <div className="agrox-container">
         {/* Trust Badges */}
         <div
           style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))',
-            gap: '1.25rem',
-            paddingBottom: '2rem',
+            gap: 'var(--spacing-xl)',
+            paddingBottom: 'var(--spacing-xl)',
             borderBottom: '1px solid rgba(255,255,255,0.1)',
-            marginBottom: '2rem',
+            marginBottom: 'var(--spacing-xl)',
           }}
         >
           <div style={{ display: 'flex', gap: '0.85rem', alignItems: 'center' }}>
@@ -54,9 +54,9 @@ export default function Footer() {
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 180px), 1fr))',
-            gap: '2rem',
-            paddingBottom: '2.5rem',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))',
+            gap: 'var(--spacing-xl)',
+            paddingBottom: 'var(--spacing-xl)',
           }}
         >
           <div>
@@ -98,18 +98,19 @@ export default function Footer() {
             <div style={{ display: 'flex', gap: '0.5rem' }}>
               <input
                 type="email"
+                aria-label="Email address"
                 placeholder="Enter your email"
+                className="agrox-input"
                 style={{
                   flex: 1,
-                  padding: '0.55rem 0.75rem',
-                  borderRadius: 'var(--radius-md)',
+                  minWidth: 0,
                   border: '1px solid rgba(255,255,255,0.2)',
                   background: 'rgba(255,255,255,0.05)',
                   color: 'var(--primitive-white)',
                   fontSize: '0.825rem',
                 }}
               />
-              <button className="agrox-btn agrox-btn-primary" style={{ padding: '0.55rem 0.85rem', fontSize: '0.825rem' }}>
+              <button className="agrox-btn agrox-btn-primary" style={{ flexShrink: 0, fontSize: '0.825rem' }}>
                 Join
               </button>
             </div>
@@ -120,7 +121,7 @@ export default function Footer() {
         <div
           style={{
             borderTop: '1px solid rgba(255,255,255,0.1)',
-            padding: '1.25rem 0',
+            paddingTop: 'var(--spacing-lg)',
             textAlign: 'center',
             fontSize: '0.8rem',
             color: 'var(--primitive-charcoal-200)',

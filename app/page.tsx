@@ -1,13 +1,12 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
-import Navbar from '@/components/layout/Navbar';
+import PageShell from '@/components/layout/PageShell';
 import CategoryBar from '@/components/layout/CategoryBar';
 import HeroSection from '@/components/home/HeroSection';
 import ProductCard from '@/components/products/ProductCard';
 import ProductDetailModal from '@/components/products/ProductDetailModal';
 import ChatDrawer from '@/components/chat/ChatDrawer';
-import Footer from '@/components/layout/Footer';
 import { Product, ProductCategory } from '@/types';
 import { Filter, RefreshCw } from 'lucide-react';
 
@@ -75,28 +74,22 @@ export default function HomePage() {
   }, [products, searchQuery, organicOnly]);
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <Navbar onSearchChange={setSearchQuery} onOpenChat={() => setIsChatOpen(true)} />
-      <CategoryBar
-        activeCategory={selectedCategory}
-        onSelectCategory={setSelectedCategory}
-      />
+    <PageShell
+      contained={false}
+      onSearchChange={setSearchQuery}
+      onOpenChat={() => setIsChatOpen(true)}
+      subnav={
+        <CategoryBar
+          activeCategory={selectedCategory}
+          onSelectCategory={setSelectedCategory}
+        />
+      }
+    >
+      <HeroSection />
 
-      <main style={{ flex: 1 }}>
-        <HeroSection />
-
-        {/* Catalog Section */}
-        <section id="products" className="agrox-container" style={{ marginTop: '2rem' }}>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'flex-start',
-              justifyContent: 'space-between',
-              flexWrap: 'wrap',
-              gap: '1rem',
-              marginBottom: '1.25rem',
-            }}
-          >
+      {/* Catalog Section */}
+      <section id="products" className="agrox-container">
+          <div className="agrox-page-header">
             <div>
               <h2 style={{ fontSize: 'clamp(1.35rem, 3.5vw, 1.75rem)', fontWeight: 800, lineHeight: 1.25 }}>
                 {selectedCategory === 'All' ? 'Verified Agricultural Produce & Equipment' : selectedCategory}
@@ -147,9 +140,10 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Grid of Products */}
+          {/* Grid of Products. The empty/loading states carry the same
+              vertical rhythm the product grid supplies via margin-block. */}
           {loading ? (
-            <div style={{ textAlign: 'center', padding: '4rem 1rem', color: 'var(--color-text-secondary)' }}>
+            <div style={{ textAlign: 'center', padding: '4rem 1rem', marginBlock: 'var(--spacing-xl)', color: 'var(--color-text-secondary)' }}>
               <RefreshCw size={32} className="spin" style={{ margin: '0 auto 1rem' }} />
               <p style={{ fontWeight: 600 }}>Fetching live agricultural listings...</p>
             </div>
@@ -158,6 +152,7 @@ export default function HomePage() {
               style={{
                 textAlign: 'center',
                 padding: '4rem 1rem',
+                marginBlock: 'var(--spacing-xl)',
                 background: 'var(--color-surface)',
                 borderRadius: 'var(--radius-lg)',
                 border: '1px solid var(--color-border)',
@@ -180,17 +175,14 @@ export default function HomePage() {
               ))}
             </div>
           )}
-        </section>
+      </section>
 
-        {/* Quick View Modal */}
-        <ProductDetailModal
-          product={quickViewProduct}
-          onClose={() => setQuickViewProduct(null)}
-          onChatFarmer={handleOpenChatWithFarmer}
-        />
-      </main>
-
-      <Footer />
+      {/* Quick View Modal */}
+      <ProductDetailModal
+        product={quickViewProduct}
+        onClose={() => setQuickViewProduct(null)}
+        onChatFarmer={handleOpenChatWithFarmer}
+      />
 
       {/* Direct Buyer-Farmer Chat Drawer */}
       <ChatDrawer
@@ -199,6 +191,6 @@ export default function HomePage() {
         targetProduct={chatProduct}
         currentUser={{ id: 'buyer-001', name: 'John Doe Enterprise', role: 'buyer' }}
       />
-    </div>
+    </PageShell>
   );
 }

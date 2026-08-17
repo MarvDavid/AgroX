@@ -146,40 +146,32 @@ export default function ChatDrawer({
 
   return (
     <>
-      <div className="agrox-drawer-backdrop" onClick={onClose} style={{ zIndex: 120 }} />
+      <div className="agrox-drawer-backdrop" onClick={onClose} style={{ zIndex: 'var(--z-modal-backdrop)' }} />
+      {/* No inline position/width/max-width here: an inline maxWidth used to
+          override .agrox-drawer's <=480px full-bleed rule, leaving a 450px
+          drawer clipped on a 480px phone. */}
       <div
         className="agrox-drawer"
-        style={{
-          position: 'fixed',
-          top: 0,
-          right: 0,
-          bottom: 0,
-          width: '100%',
-          maxWidth: '450px',
-          background: 'var(--color-surface)',
-          zIndex: 121,
-          display: 'flex',
-          flexDirection: 'column',
-          boxShadow: 'var(--shadow-xl)',
-          borderLeft: '1px solid var(--color-border)',
-        }}
+        style={{ zIndex: 'var(--z-modal)', borderLeft: '1px solid var(--color-border)' }}
       >
         {/* Header */}
         <div
+          className="agrox-drawer-section"
           style={{
-            padding: '1.25rem 1.5rem',
             borderBottom: '1px solid var(--color-border)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
+            gap: '0.5rem',
             background: 'var(--color-surface-muted)',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', minWidth: 0 }}>
             <div
               style={{
                 width: '40px',
                 height: '40px',
+                flexShrink: 0,
                 borderRadius: '50%',
                 background: 'var(--primitive-green-100)',
                 color: 'var(--primitive-green-900)',
@@ -190,8 +182,8 @@ export default function ChatDrawer({
             >
               <MessageSquare size={20} />
             </div>
-            <div>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 800 }}>
+            <div style={{ minWidth: 0 }}>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 800, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 {activeThread
                   ? currentUser.role === 'buyer'
                     ? activeThread.farmerName
@@ -206,7 +198,8 @@ export default function ChatDrawer({
           </div>
           <button
             onClick={onClose}
-            style={{ padding: '0.5rem', borderRadius: 'var(--radius-md)', background: 'transparent', color: 'var(--color-text-secondary)' }}
+            aria-label="Close chat"
+            style={{ flexShrink: 0, padding: '0.5rem', borderRadius: 'var(--radius-md)', background: 'transparent', color: 'var(--color-text-secondary)' }}
           >
             <X size={20} />
           </button>
@@ -215,8 +208,9 @@ export default function ChatDrawer({
         {/* Product Banner if negotiating a specific item */}
         {activeThread?.productName && (
           <div
+            className="agrox-drawer-section"
             style={{
-              padding: '0.75rem 1.5rem',
+              paddingBlock: '0.75rem',
               background: 'var(--primitive-green-100)',
               fontSize: '0.825rem',
               fontWeight: 600,
@@ -224,20 +218,19 @@ export default function ChatDrawer({
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
+              gap: '0.5rem',
               borderBottom: '1px solid var(--color-border)',
             }}
           >
-            <span>Inquiry on: <strong>{activeThread.productName}</strong></span>
-            <span style={{ fontSize: '0.75rem', opacity: 0.8 }}>ID: {activeThread.productId}</span>
+            <span style={{ minWidth: 0, overflowWrap: 'anywhere' }}>Inquiry on: <strong>{activeThread.productName}</strong></span>
+            <span style={{ fontSize: '0.75rem', opacity: 0.8, flexShrink: 0 }}>ID: {activeThread.productId}</span>
           </div>
         )}
 
         {/* Message Content Body */}
         <div
+          className="agrox-drawer-body"
           style={{
-            flex: 1,
-            overflowY: 'auto',
-            padding: '1.5rem',
             display: 'flex',
             flexDirection: 'column',
             gap: '1rem',
@@ -308,7 +301,7 @@ export default function ChatDrawer({
         </div>
 
         {/* Quick Suggestion Chips */}
-        <div style={{ padding: '0.5rem 1.5rem', display: 'flex', gap: '0.5rem', overflowX: 'auto', background: 'var(--color-surface-muted)', borderTop: '1px solid var(--color-border)' }}>
+        <div className="agrox-drawer-section agrox-scroller" style={{ paddingBlock: '0.5rem', display: 'flex', gap: '0.5rem', background: 'var(--color-surface-muted)', borderTop: '1px solid var(--color-border)' }}>
           {[
             'Is this produce available for immediate dispatch?',
             'What is the minimum bulk order quantity?',
@@ -319,9 +312,10 @@ export default function ChatDrawer({
               onClick={() => setInputText(chip)}
               style={{
                 whiteSpace: 'nowrap',
+                flexShrink: 0,
                 fontSize: '0.75rem',
                 padding: '0.35rem 0.75rem',
-                borderRadius: '12px',
+                borderRadius: 'var(--radius-md)',
                 background: 'var(--color-surface)',
                 border: '1px solid var(--color-border)',
                 color: 'var(--color-text-secondary)',
@@ -336,8 +330,8 @@ export default function ChatDrawer({
         {/* Input Box */}
         <form
           onSubmit={handleSendMessage}
+          className="agrox-drawer-section"
           style={{
-            padding: '1rem 1.5rem',
             borderTop: '1px solid var(--color-border)',
             display: 'flex',
             gap: '0.75rem',
@@ -346,24 +340,18 @@ export default function ChatDrawer({
         >
           <input
             type="text"
+            aria-label="Message"
             placeholder="Type your message here..."
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
-            style={{
-              flex: 1,
-              padding: '0.75rem 1rem',
-              borderRadius: 'var(--radius-md)',
-              border: '1px solid var(--color-border)',
-              outline: 'none',
-              fontSize: '0.9rem',
-              background: 'var(--color-surface-muted)',
-            }}
+            className="agrox-input"
+            style={{ flex: 1, minWidth: 0, fontSize: '0.9rem', background: 'var(--color-surface-muted)' }}
           />
           <button
             type="submit"
             disabled={!inputText.trim()}
             className="agrox-btn agrox-btn-primary"
-            style={{ opacity: inputText.trim() ? 1 : 0.5, padding: '0.75rem 1.25rem' }}
+            style={{ flexShrink: 0, opacity: inputText.trim() ? 1 : 0.5, padding: '0.75rem 1.25rem' }}
           >
             <Send size={18} />
           </button>

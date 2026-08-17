@@ -31,23 +31,25 @@ export default function CartDrawer() {
       <div className="agrox-drawer">
         {/* Header */}
         <div
+          className="agrox-drawer-section"
           style={{
-            padding: '1.25rem 1.5rem',
             borderBottom: '1px solid var(--color-border)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
+            gap: '0.5rem',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <ShoppingBag size={20} style={{ color: 'var(--color-action-primary)' }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', minWidth: 0 }}>
+            <ShoppingBag size={20} style={{ color: 'var(--color-action-primary)', flexShrink: 0 }} />
             <h2 style={{ fontSize: '1.25rem', fontWeight: 700 }}>
               Your Cart ({totalItems})
             </h2>
           </div>
           <button
             onClick={() => setIsCartOpen(false)}
-            style={{ color: 'var(--color-text-secondary)', padding: '0.25rem' }}
+            aria-label="Close cart"
+            style={{ color: 'var(--color-text-secondary)', padding: '0.25rem', flexShrink: 0 }}
           >
             <X size={20} />
           </button>
@@ -55,8 +57,9 @@ export default function CartDrawer() {
 
         {/* Free Shipping Progress */}
         <div
+          className="agrox-drawer-section"
           style={{
-            padding: '0.85rem 1.5rem',
+            paddingBlock: '0.85rem',
             background: 'var(--primitive-green-100)',
             borderBottom: '1px solid var(--color-border)',
           }}
@@ -94,7 +97,7 @@ export default function CartDrawer() {
         </div>
 
         {/* Items List */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '1.5rem' }}>
+        <div className="agrox-drawer-body">
           {cart.length === 0 ? (
             <div
               style={{
@@ -129,12 +132,13 @@ export default function CartDrawer() {
                     style={{
                       width: '70px',
                       height: '70px',
+                      flexShrink: 0,
                       borderRadius: 'var(--radius-sm)',
                       objectFit: 'cover',
                     }}
                   />
-                  <div style={{ flex: 1 }}>
-                    <h4 style={{ fontSize: '0.925rem', fontWeight: 700 }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <h4 style={{ fontSize: '0.925rem', fontWeight: 700, overflowWrap: 'anywhere' }}>
                       {product.name}
                     </h4>
                     <div style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)' }}>
@@ -192,8 +196,8 @@ export default function CartDrawer() {
         {/* Footer Summary */}
         {cart.length > 0 && (
           <div
+            className="agrox-drawer-section"
             style={{
-              padding: '1.25rem 1.5rem',
               borderTop: '1px solid var(--color-border)',
               background: 'var(--color-surface-muted)',
             }}

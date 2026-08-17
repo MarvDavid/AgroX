@@ -1,24 +1,20 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
+import PageShell from '@/components/layout/PageShell';
 import ChatDrawer from '@/components/chat/ChatDrawer';
-import { 
-  LayoutDashboard, 
-  Package, 
-  TrendingUp, 
-  Truck, 
-  ShieldAlert, 
-  Plus, 
-  CheckCircle2, 
+import {
+  LayoutDashboard,
+  Package,
+  TrendingUp,
+  Plus,
+  CheckCircle2,
   Upload,
   AlertCircle,
   MessageSquare,
   RefreshCw,
-  Eye
+  X
 } from 'lucide-react';
-import Link from 'next/link';
 import { formatCurrency } from '@/lib/utils';
 import { Product, Order } from '@/types';
 
@@ -133,14 +129,11 @@ export default function SellerPortalPage() {
   const totalEscrowSales = orders.reduce((acc, curr) => acc + curr.totalAmount, 0);
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--color-surface-muted)' }}>
-      <Navbar />
+    <PageShell muted wide>
+        <div className="agrox-dash-grid">
 
-      <main style={{ flex: 1, padding: '1.5rem 0' }} className="agrox-container">
-        <div className="agrox-seller-grid">
-          
           {/* Mobile Horizontal Tab Navigation */}
-          <div className="agrox-tab-strip visible-mobile" style={{ marginBottom: '0.5rem' }}>
+          <div className="agrox-tab-strip visible-mobile">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeTab === item.id;
@@ -165,8 +158,8 @@ export default function SellerPortalPage() {
           </div>
 
           {/* Desktop Sidebar Nav */}
-          <aside className="agrox-seller-sidebar hidden-mobile">
-            <h2 style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: '0.85rem', paddingBottom: '0.85rem', borderBottom: '1px solid var(--color-border)' }}>Farmer Portal</h2>
+          <aside className="agrox-dash-sidebar hidden-mobile">
+            <h2 style={{ fontSize: '1.1rem', fontWeight: 800, paddingBottom: '0.85rem', borderBottom: '1px solid var(--color-border)' }}>Farmer Portal</h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
               {navItems.map((item) => {
                 const Icon = item.icon;
@@ -205,15 +198,15 @@ export default function SellerPortalPage() {
           </aside>
 
           {/* Main Dashboard Area */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            
+          <div className="agrox-dash-main">
+
             {/* Header Action */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
+            <div className="agrox-page-header" style={{ marginBottom: 0 }}>
               <div>
                 <h1 style={{ fontSize: 'clamp(1.4rem, 3.5vw, 1.85rem)', fontWeight: 800, lineHeight: 1.25 }}>Good morning, SunValley Farms</h1>
                 <p style={{ color: 'var(--color-text-secondary)', marginTop: '0.25rem', fontSize: '0.9rem' }}>Submit produce listings & manage buyer escrow shipments.</p>
               </div>
-              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', width: 'auto' }}>
+              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                 <button 
                   onClick={() => {
                     setChatProduct(null);
@@ -235,18 +228,18 @@ export default function SellerPortalPage() {
             {/* Dashboard Cards */}
             {activeTab === 'dashboard' && (
               <>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 180px), 1fr))', gap: '1rem' }}>
-                  <div style={{ background: 'var(--color-surface)', padding: '1.15rem 1.25rem', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-border)' }}>
-                    <div style={{ color: 'var(--color-text-secondary)', fontSize: '0.825rem', fontWeight: 600, marginBottom: '0.25rem' }}>Escrow Secured Revenue</div>
-                    <div style={{ fontSize: 'clamp(1.35rem, 3vw, 1.75rem)', fontWeight: 800, wordBreak: 'break-word' }}>{formatCurrency(totalEscrowSales || 1450000)}</div>
+                <div className="agrox-stat-grid" style={{ marginBottom: 0 }}>
+                  <div className="agrox-stat-card">
+                    <div className="agrox-stat-label">Escrow Secured Revenue</div>
+                    <div className="agrox-stat-value">{formatCurrency(totalEscrowSales || 1450000)}</div>
                   </div>
-                  <div style={{ background: 'var(--color-surface)', padding: '1.15rem 1.25rem', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-border)' }}>
-                    <div style={{ color: 'var(--color-text-secondary)', fontSize: '0.825rem', fontWeight: 600, marginBottom: '0.25rem' }}>Active Orders</div>
-                    <div style={{ fontSize: 'clamp(1.35rem, 3vw, 1.75rem)', fontWeight: 800 }}>{orders.length || 12}</div>
+                  <div className="agrox-stat-card">
+                    <div className="agrox-stat-label">Active Orders</div>
+                    <div className="agrox-stat-value">{orders.length || 12}</div>
                   </div>
-                  <div style={{ background: 'var(--color-surface)', padding: '1.15rem 1.25rem', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-border)' }}>
-                    <div style={{ color: 'var(--color-text-secondary)', fontSize: '0.825rem', fontWeight: 600, marginBottom: '0.25rem' }}>Active Listings</div>
-                    <div style={{ fontSize: 'clamp(1.35rem, 3vw, 1.75rem)', fontWeight: 800 }}>{products.length}</div>
+                  <div className="agrox-stat-card">
+                    <div className="agrox-stat-label">Active Listings</div>
+                    <div className="agrox-stat-value">{products.length}</div>
                   </div>
                 </div>
 
@@ -271,7 +264,7 @@ export default function SellerPortalPage() {
 
             {/* Orders Tab */}
             {activeTab === 'orders' && (
-              <div style={{ background: 'var(--color-surface)', padding: '1.25rem', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-border)' }}>
+              <div className="agrox-panel">
                 <h3 style={{ fontSize: '1.15rem', fontWeight: 800, marginBottom: '1rem' }}>Buyer Escrow Orders</h3>
                 {orders.length === 0 ? (
                   <div style={{ textAlign: 'center', padding: '3rem 0', color: 'var(--color-text-secondary)' }}>No orders received yet.</div>
@@ -294,7 +287,7 @@ export default function SellerPortalPage() {
 
             {/* Produce Listings Tab */}
             {activeTab === 'products' && (
-              <div style={{ background: 'var(--color-surface)', padding: '1.25rem', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-border)' }}>
+              <div className="agrox-panel">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1.15rem' }}>
                   <h3 style={{ fontSize: '1.15rem', fontWeight: 800 }}>Active Farm Produce ({products.length})</h3>
                   <button onClick={() => setIsListingModalOpen(true)} className="agrox-btn agrox-btn-primary" style={{ padding: '0.4rem 0.85rem', fontSize: '0.825rem' }}>
@@ -302,11 +295,11 @@ export default function SellerPortalPage() {
                   </button>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 180px), 1fr))', gap: '1rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 200px), 1fr))', gap: '1rem' }}>
                   {products.map((p) => (
-                    <div key={p.id} style={{ border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', padding: '0.85rem', background: 'var(--color-surface-muted)', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                    <div key={p.id} style={{ border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', padding: '0.85rem', background: 'var(--color-surface-muted)', display: 'flex', flexDirection: 'column', gap: '0.35rem', minWidth: 0 }}>
                       <img src={p.image} alt={p.name} style={{ width: '100%', height: '120px', objectFit: 'cover', borderRadius: 'var(--radius-sm)' }} />
-                      <div style={{ fontWeight: 700, fontSize: '0.9rem', marginTop: '0.25rem' }}>{p.name}</div>
+                      <div style={{ fontWeight: 700, fontSize: '0.9rem', marginTop: '0.25rem', overflowWrap: 'anywhere' }}>{p.name}</div>
                       <div style={{ fontSize: '0.785rem', color: 'var(--color-text-secondary)' }}>{p.category}</div>
                       <div style={{ fontWeight: 800, color: 'var(--color-action-primary)', marginTop: '0.2rem', fontSize: '0.9rem' }}>{formatCurrency(p.price)} / {p.unit}</div>
                     </div>
@@ -317,15 +310,14 @@ export default function SellerPortalPage() {
 
           </div>
         </div>
-      </main>
 
       {/* Product Listing Modal */}
       {isListingModalOpen && (
         <>
-          <div className="agrox-drawer-backdrop" onClick={() => !submitted && setIsListingModalOpen(false)} style={{ zIndex: 110 }} />
-          <div className="agrox-modal-content">
+          <div className="agrox-drawer-backdrop" onClick={() => !submitted && setIsListingModalOpen(false)} style={{ zIndex: 'var(--z-modal-backdrop)' }} />
+          <div className="agrox-modal" role="dialog" aria-modal="true" aria-label="List produce to buyer marketplace">
             {submitted ? (
-              <div style={{ textAlign: 'center', padding: '2rem 1rem' }}>
+              <div className="agrox-modal-body" style={{ textAlign: 'center', padding: '2rem 1rem' }}>
                 <CheckCircle2 size={56} style={{ color: 'var(--color-success)', margin: '0 auto 1rem' }} />
                 <h2 style={{ fontSize: '1.35rem', fontWeight: 800 }}>Listing Published Live!</h2>
                 <p style={{ color: 'var(--color-text-secondary)', margin: '0.5rem 0', fontSize: '0.9rem' }}>
@@ -333,58 +325,61 @@ export default function SellerPortalPage() {
                 </p>
               </div>
             ) : (
-              <form onSubmit={handleListingSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, borderBottom: '1px solid var(--color-border)', paddingBottom: '0.65rem' }}>
-                  List Produce to Buyer Marketplace
-                </h3>
-                
-                <div className="agrox-form-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))', gap: '0.85rem' }}>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.825rem', fontWeight: 600, marginBottom: '0.3rem' }}>Category</label>
-                    <select className="agrox-search-input" style={{ paddingLeft: '0.85rem' }} value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })}>
-                      <option>Fresh Produce</option>
-                      <option>Grains & Cereals</option>
-                      <option>Seeds & Seedlings</option>
-                      <option>Fertilizers & Soil</option>
-                      <option>Farm Equipment</option>
-                      <option>Livestock & Poultry</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.825rem', fontWeight: 600, marginBottom: '0.3rem' }}>Product Title</label>
-                    <input type="text" required placeholder="e.g. Organic Sweet Yellow Maize" className="agrox-search-input" style={{ paddingLeft: '0.85rem' }} value={formData.productTitle} onChange={(e) => setFormData({ ...formData, productTitle: e.target.value })} />
-                  </div>
-                </div>
-
-                <div className="agrox-form-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))', gap: '0.85rem' }}>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.825rem', fontWeight: 600, marginBottom: '0.3rem' }}>Price (NGN ₦)</label>
-                    <input type="number" required placeholder="35000" className="agrox-search-input" style={{ paddingLeft: '0.85rem' }} value={formData.price} onChange={(e) => setFormData({ ...formData, price: e.target.value })} />
-                  </div>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.825rem', fontWeight: 600, marginBottom: '0.3rem' }}>Unit Packaging</label>
-                    <input type="text" required placeholder="bag (50kg)" className="agrox-search-input" style={{ paddingLeft: '0.85rem' }} value={formData.unit} onChange={(e) => setFormData({ ...formData, unit: e.target.value })} />
-                  </div>
-                </div>
-
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.825rem', fontWeight: 600, marginBottom: '0.3rem' }}>Harvest Description & Moisture Level</label>
-                  <textarea rows={3} required placeholder="Sun-dried yellow maize, 12% moisture level, high quality." className="agrox-search-input" style={{ paddingLeft: '0.85rem', borderRadius: 'var(--radius-md)', height: 'auto' }} value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} />
-                </div>
-
-                <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.35rem' }}>
-                  <button type="button" onClick={() => setIsListingModalOpen(false)} className="agrox-btn" style={{ flex: 1, background: 'var(--color-surface-muted)', color: 'var(--color-text-primary)' }}>Cancel</button>
-                  <button type="submit" disabled={submitting} className="agrox-btn agrox-btn-primary" style={{ flex: 2 }}>
-                    {submitting ? <RefreshCw size={16} className="spin" /> : <Upload size={16} />} Publish Listing
+              <>
+                <div className="agrox-modal-header">
+                  <h3 className="agrox-modal-title">List Produce to Buyer Marketplace</h3>
+                  <button type="button" onClick={() => setIsListingModalOpen(false)} className="agrox-modal-close" aria-label="Close listing form">
+                    <X size={18} />
                   </button>
                 </div>
-              </form>
+
+                <form onSubmit={handleListingSubmit} className="agrox-modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))', gap: '0.85rem' }}>
+                    <div style={{ minWidth: 0 }}>
+                      <label className="agrox-label">Category</label>
+                      <select className="agrox-input" value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })}>
+                        <option>Fresh Produce</option>
+                        <option>Grains & Cereals</option>
+                        <option>Seeds & Seedlings</option>
+                        <option>Fertilizers & Soil</option>
+                        <option>Farm Equipment</option>
+                        <option>Livestock & Poultry</option>
+                      </select>
+                    </div>
+                    <div style={{ minWidth: 0 }}>
+                      <label className="agrox-label">Product Title</label>
+                      <input type="text" required placeholder="e.g. Organic Sweet Yellow Maize" className="agrox-input" value={formData.productTitle} onChange={(e) => setFormData({ ...formData, productTitle: e.target.value })} />
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))', gap: '0.85rem' }}>
+                    <div style={{ minWidth: 0 }}>
+                      <label className="agrox-label">Price (NGN ₦)</label>
+                      <input type="number" required placeholder="35000" className="agrox-input" value={formData.price} onChange={(e) => setFormData({ ...formData, price: e.target.value })} />
+                    </div>
+                    <div style={{ minWidth: 0 }}>
+                      <label className="agrox-label">Unit Packaging</label>
+                      <input type="text" required placeholder="bag (50kg)" className="agrox-input" value={formData.unit} onChange={(e) => setFormData({ ...formData, unit: e.target.value })} />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="agrox-label">Harvest Description & Moisture Level</label>
+                    <textarea rows={3} required placeholder="Sun-dried yellow maize, 12% moisture level, high quality." className="agrox-input" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} />
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.35rem' }}>
+                    <button type="button" onClick={() => setIsListingModalOpen(false)} className="agrox-btn" style={{ flex: 1, background: 'var(--color-surface-muted)', color: 'var(--color-text-primary)' }}>Cancel</button>
+                    <button type="submit" disabled={submitting} className="agrox-btn agrox-btn-primary" style={{ flex: 2 }}>
+                      {submitting ? <RefreshCw size={16} className="spin" /> : <Upload size={16} />} Publish Listing
+                    </button>
+                  </div>
+                </form>
+              </>
             )}
           </div>
         </>
       )}
-
-      <Footer />
 
       <ChatDrawer
         isOpen={isChatOpen}
@@ -392,51 +387,6 @@ export default function SellerPortalPage() {
         targetProduct={chatProduct}
         currentUser={{ id: 's-101', name: 'SunValley Grain Farms', role: 'farmer' }}
       />
-      
-      <style dangerouslySetInnerHTML={{__html: `
-        .agrox-seller-grid {
-          display: grid;
-          grid-template-columns: 1fr;
-          gap: 1.25rem;
-        }
-        .agrox-seller-sidebar {
-          background: var(--color-surface);
-          padding: 1.25rem;
-          border-radius: var(--radius-lg);
-          border: 1px solid var(--color-border);
-          height: fit-content;
-        }
-        .agrox-modal-content {
-          position: fixed;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          width: 94%;
-          max-width: 640px;
-          max-height: 90vh;
-          overflow-y: auto;
-          background: var(--color-surface);
-          border-radius: var(--radius-lg);
-          padding: 1.25rem;
-          z-index: 111;
-          box-shadow: var(--shadow-xl);
-        }
-        @media(min-width: 768px) {
-          .agrox-modal-content {
-            padding: 2rem;
-          }
-        }
-        @media(min-width: 992px) {
-          .agrox-seller-grid {
-            grid-template-columns: 240px 1fr;
-            gap: 2rem;
-          }
-          .agrox-seller-sidebar {
-            position: sticky;
-            top: 5.5rem;
-          }
-        }
-      `}} />
-    </div>
+    </PageShell>
   );
 }

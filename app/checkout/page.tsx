@@ -1,8 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
+import PageShell from '@/components/layout/PageShell';
 import { useCart } from '@/context/CartContext';
 import { formatCurrency } from '@/lib/utils';
 import { ShieldCheck, Truck, CreditCard, CheckCircle2, ArrowLeft, RefreshCw } from 'lucide-react';
@@ -141,20 +140,15 @@ export default function CheckoutPage() {
 
   if (orderComplete) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-        <Navbar />
-        <main style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1.5rem 0' }} className="agrox-container">
+      <PageShell mainClassName="agrox-page-center">
           <div
+            className="agrox-panel"
             style={{
               textAlign: 'center',
-              padding: '2.5rem 1.25rem',
               maxWidth: '580px',
               width: '100%',
-              background: 'var(--color-surface)',
-              borderRadius: 'var(--radius-lg)',
-              border: '1px solid var(--color-border)',
+              margin: '0 auto',
               boxShadow: 'var(--shadow-xl)',
-              margin: '1rem auto',
             }}
           >
             <CheckCircle2 size={56} style={{ color: 'var(--color-success)', margin: '0 auto 0.75rem' }} />
@@ -190,17 +184,12 @@ export default function CheckoutPage() {
               </Link>
             </div>
           </div>
-        </main>
-        <Footer />
-      </div>
+      </PageShell>
     );
   }
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <Navbar />
-
-      <main style={{ flex: 1, padding: '1rem 0 3rem' }} className="agrox-container">
+    <PageShell>
         <div>
           <Link
             href="/"
@@ -234,61 +223,50 @@ export default function CheckoutPage() {
               {/* Form */}
               <form
                 onSubmit={handlePlaceOrder}
-                style={{
-                  background: 'var(--color-surface)',
-                  padding: '1.25rem',
-                  borderRadius: 'var(--radius-lg)',
-                  border: '1px solid var(--color-border)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '1rem',
-                }}
-                className="agrox-checkout-form"
+                className="agrox-panel"
+                style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}
               >
                 <h3 style={{ fontSize: '1.15rem', fontWeight: 700, borderBottom: '1px solid var(--color-border)', paddingBottom: '0.65rem' }}>
                   Shipping & Delivery Address
                 </h3>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.825rem', fontWeight: 600, marginBottom: '0.3rem' }}>
+                  <label className="agrox-label">
                     Full Name / Enterprise Name
                   </label>
                   <input
                     type="text"
                     required
                     placeholder="e.g. John Doe Enterprises"
-                    className="agrox-search-input"
-                    style={{ paddingLeft: '0.85rem' }}
+                    className="agrox-input"
                     value={shippingDetails.fullName}
                     onChange={(e) => setShippingDetails({ ...shippingDetails, fullName: e.target.value })}
                   />
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))', gap: '0.85rem' }}>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.825rem', fontWeight: 600, marginBottom: '0.3rem' }}>
+                  <div style={{ minWidth: 0 }}>
+                    <label className="agrox-label">
                       Email Address
                     </label>
                     <input
                       type="email"
                       required
                       placeholder="john@agricbuyer.com"
-                      className="agrox-search-input"
-                      style={{ paddingLeft: '0.85rem' }}
+                      className="agrox-input"
                       value={shippingDetails.email}
                       onChange={(e) => setShippingDetails({ ...shippingDetails, email: e.target.value })}
                     />
                   </div>
                   <div>
-                    <label style={{ display: 'block', fontSize: '0.825rem', fontWeight: 600, marginBottom: '0.3rem' }}>
+                    <label className="agrox-label">
                       Phone Number
                     </label>
                     <input
                       type="tel"
                       required
                       placeholder="+234 803 000 0000"
-                      className="agrox-search-input"
-                      style={{ paddingLeft: '0.85rem' }}
+                      className="agrox-input"
                       value={shippingDetails.phone}
                       onChange={(e) => setShippingDetails({ ...shippingDetails, phone: e.target.value })}
                     />
@@ -296,15 +274,14 @@ export default function CheckoutPage() {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.825rem', fontWeight: 600, marginBottom: '0.3rem' }}>
+                  <label className="agrox-label">
                     Delivery Street Address / Grain Depot
                   </label>
                   <input
                     type="text"
                     required
                     placeholder="Plot 4, Grain Depot Warehouse, Ikeja, Lagos"
-                    className="agrox-search-input"
-                    style={{ paddingLeft: '0.85rem' }}
+                    className="agrox-input"
                     value={shippingDetails.address}
                     onChange={(e) => setShippingDetails({ ...shippingDetails, address: e.target.value })}
                   />
@@ -356,19 +333,11 @@ export default function CheckoutPage() {
                 </button>
               </form>
 
-              {/* Order Summary */}
-              <div>
-                <div
-                  style={{
-                    background: 'var(--color-surface)',
-                    padding: '1.25rem',
-                    borderRadius: 'var(--radius-lg)',
-                    border: '1px solid var(--color-border)',
-                    position: 'sticky',
-                    top: '5.5rem',
-                  }}
-                  className="agrox-checkout-summary"
-                >
+              {/* Order Summary. Stickiness is applied by
+                  .agrox-checkout-summary-wrap at >=1024px only, where the grid
+                  is actually two columns. */}
+              <div className="agrox-checkout-summary-wrap">
+                <div className="agrox-panel">
                   <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '0.85rem' }}>
                     Order Summary ({cart.length} items)
                   </h3>
@@ -376,7 +345,7 @@ export default function CheckoutPage() {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.25rem' }}>
                     {cart.map(({ product, quantity }) => (
                       <div key={product.id} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', gap: '0.5rem' }}>
-                        <div>
+                        <div style={{ minWidth: 0, overflowWrap: 'anywhere' }}>
                           <span style={{ fontWeight: 600 }}>{product.name}</span>
                           <span style={{ color: 'var(--color-text-secondary)', display: 'block', fontSize: '0.785rem' }}>
                             Seller: {product.seller.name} • Qty: {quantity} ({formatCurrency(product.price)} / {product.unit})
@@ -404,18 +373,6 @@ export default function CheckoutPage() {
             </div>
           )}
         </div>
-      </main>
-
-      <Footer />
-
-      <style dangerouslySetInnerHTML={{__html: `
-        @media(min-width: 768px) {
-          .agrox-checkout-form,
-          .agrox-checkout-summary {
-            padding: 2rem !important;
-          }
-        }
-      `}} />
-    </div>
+    </PageShell>
   );
 }
