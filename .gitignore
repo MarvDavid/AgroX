@@ -40,3 +40,19 @@ Thumbs.db
 *.log
 .eslintcache
 pnpm-debug.log*
+
+# AI agent tooling and generated agent files.
+# AGENTS.md in particular is re-created by `next dev` on every run, so it is
+# ignored rather than deleted - otherwise it reappears as an uncommitted change.
+CLAUDE.md
+AGENTS.md
+.agents/
+.claude/
+skills-lock.json
+
+# Local documentation, notes and report drafts. README.md is the only markdown
+# file that belongs in the repository.
+/docs/
+*.md
+!README.md
+

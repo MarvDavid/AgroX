@@ -1,28 +1,103 @@
 # AgroX — B2B Agricultural Produce & Escrow Marketplace
 
-> **AgroX** is an institutional agricultural commerce platform connecting institutional buyers, food processors, and bulk retailers directly with verified commercial farmers across Nigeria. It features a cryptographic escrow engine, Paystack payment processing, real-time farmer-buyer negotiation messaging, and dedicated buyer and farmer command centers.
+**AgroX is a business-to-business agricultural marketplace that lets bulk buyers purchase
+produce directly from verified farmers, with payment held in escrow until delivery is
+confirmed.**
+
+---
+
+## 📖 About the Project
+
+### The problem
+
+Agricultural trade in Nigeria is dominated by intermediaries, largely because buyers and
+sellers who have never dealt with one another have no basis for trusting each other with
+money. A farmer will not ship a lorry of maize before being paid; a processor will not wire
+₦2 million to a stranger before seeing the goods. Middlemen bridge that trust gap, and take
+a margin from both sides for doing so.
+
+### The approach
+
+AgroX removes the need for that intermediary by holding the money itself. A buyer's payment
+is captured up front through Paystack and recorded against the order, but it is not treated
+as the seller's until the produce has been dispatched, delivered and signed off. Every
+order moves through an explicit escrow lifecycle, and the platform arbitrates when something
+goes wrong — including issuing full or partial refunds.
+
+The result is a marketplace where a first-time buyer and a first-time seller can transact
+safely without knowing each other.
+
+### Who uses it
+
+| Role | What they do |
+|---|---|
+| **Buyers** — processors, retailers, institutional kitchens | Browse produce by category, negotiate with farmers, pay into escrow, track orders to delivery |
+| **Farmers / suppliers** | List produce with pricing, packaging and stock, respond to buyer enquiries, fulfil orders |
+| **Platform administrators** | List produce on the platform's own behalf, oversee every order, advance escrow states, issue refunds, answer support |
+
+### What it does
+
+- **Produce catalogue** — search and category filtering, organic and discount indicators, stock awareness
+- **Escrow checkout** — Paystack payment with server-side pricing, verified against the processor before any order is marked paid
+- **Order lifecycle** — eight explicit states from `pending` through to `escrow_released` or `refunded`
+- **Refunds** — full and partial, issued against the payment processor and reconciled by webhook
+- **Negotiation & support messaging** — buyer-to-farmer conversations, plus a support channel to the platform
+- **Administrative console** — password-protected; product management with image upload, order oversight, refund queue and a support inbox
+- **First-party listings** — the platform can sell directly alongside farmers under its own verified identity
+
+### Design principles
+
+Two commitments shape the implementation and are worth stating plainly:
+
+1. **The database is the only source of truth.** The application ships no sample catalogue
+   and no placeholder records. If the database is unreachable, endpoints return
+   `503 DATABASE_UNAVAILABLE` with the reason — an empty catalogue means the catalogue is
+   empty, never that the system quietly substituted invented data.
+
+2. **Money is never assumed.** An order is created *unpaid* and only becomes
+   `paid_escrow_secured` when Paystack independently confirms the transaction for the
+   correct amount and currency. Abandoning checkout, a network failure, or a declined
+   payment all leave the order unpaid. Payment confirmations are idempotent, so the
+   browser callback and the asynchronous webhook cannot double-apply.
 
 ---
 
 ## 📑 Table of Contents
-1. [System Architecture](#-system-architecture)
-2. [Order & Escrow Lifecycle](#-order--escrow-lifecycle)
-3. [Realtime Chat & Negotiation Flow](#-realtime-chat--negotiation-flow)
-4. [Database Entity-Relationship (ER) Model](#-database-entity-relationship-er-model)
-5. [Directory Structure](#-directory-structure)
-6. [Pages & Application Modules](#-pages--application-modules)
-7. [Components & UI Elements](#-components--ui-elements)
-8. [Backend & API Endpoints](#-backend--api-endpoints)
-9. [State Management & Contexts](#-state-management--contexts)
-10. [Database Schema & Realtime Setup](#-database-schema--realtime-setup)
-11. [Environment Variables](#-environment-variables)
-12. [Getting Started Locally](#-getting-started-locally)
+1. [About the Project](#-about-the-project)
+2. [System Architecture](#-system-architecture)
+3. [Order & Escrow Lifecycle](#-order--escrow-lifecycle)
+4. [Chat & Negotiation Flow](#-chat--negotiation-flow)
+5. [Database Entity-Relationship (ER) Model](#-database-entity-relationship-er-model)
+6. [Directory Structure](#-directory-structure)
+7. [Pages & Application Modules](#-pages--application-modules)
+8. [Components & UI Elements](#-components--ui-elements)
+9. [Backend & API Endpoints](#-backend--api-endpoints)
+10. [State Management & Contexts](#-state-management--contexts)
+11. [Database Schema & Realtime Setup](#-database-schema--realtime-setup)
+12. [Environment Variables](#-environment-variables)
+13. [Getting Started Locally](#-getting-started-locally)
+14. [Admin Console](#-admin-console)
+15. [Security & Best Practices](#-security--best-practices)
+
+---
+
+## 🧱 Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Framework | Next.js 16.3 (App Router) |
+| Language | TypeScript 5.6 |
+| UI | React 18.3, Lucide icons |
+| Styling | Hand-rolled CSS design system (design tokens + `agrox-*` utilities) |
+| Database | PostgreSQL via Supabase, with Row Level Security |
+| Storage | Supabase Storage (product imagery) |
+| Payments | Paystack (cards, bank transfer, USSD, mobile money) |
 
 ---
 
 ## 🏛 System Architecture
 
-The following diagram illustrates the relationship between the Next.js frontend, Serverless API Routes, PostgreSQL via Supabase, Paystack payment infrastructure, and Realtime WebSocket communication.
+The following diagram illustrates the relationship between the Next.js frontend, server-side route handlers, PostgreSQL via Supabase, and the Paystack payment infrastructure.
 
 ```mermaid
 graph TD
@@ -105,7 +180,7 @@ sequenceDiagram
 
 ---
 
-## 💬 Realtime Chat & Negotiation Flow
+## 💬 Chat & Negotiation Flow
 
 Buyers and farmers can negotiate bulk discounts, moisture levels, and logistics delivery timelines in real-time.
 
@@ -204,9 +279,18 @@ erDiagram
 ```plaintext
 agricX/
 ├── app/                              # Next.js App Router
-│   ├── admin/                        # Admin Portal & Dispute Management
-│   │   └── page.tsx
+│   ├── admin/                        # Admin console (password protected)
+│   │   ├── page.tsx                  # Products, orders, refunds, support
+│   │   └── login/page.tsx            # Authentication screen
 │   ├── api/                          # REST API Handlers
+│   │   ├── admin/                    # Admin-only, gated by proxy.ts
+│   │   │   ├── session/route.ts      # Login / logout
+│   │   │   ├── products/             # Listing CRUD
+│   │   │   ├── orders/route.ts       # Oversight & escrow transitions
+│   │   │   ├── refunds/route.ts      # Refund issue & reconciliation
+│   │   │   ├── chats/route.ts        # Support inbox
+│   │   │   ├── upload/route.ts       # Product image upload
+│   │   │   └── diagnostics/route.ts  # Environment self-report
 │   │   ├── chat/route.ts             # Direct messaging & threads
 │   │   ├── orders/route.ts           # Order creation & retrieval
 │   │   ├── paystack/
@@ -270,8 +354,9 @@ agricX/
 | **`/buyer`** | **Buyer Command Center** | Dashboard for procurement managers to track active escrow orders, fulfillment milestones, and chat with farmers. |
 | **`/seller`** | **Farmer Portal** | Portal for verified farmers to publish produce harvests, track revenue in escrow, and manage order dispatches. |
 | **`/checkout`** | **Escrow Checkout** | Multi-item checkout form integrated with Paystack inline/redirect payments and simulated sandbox testing. |
-| **`/chat`** | **Direct Message Inbox** | Full-page conversation interface displaying active buyer-farmer negotiation threads and real-time messaging. |
-| **`/admin`** | **Admin Governance Console** | Administrative console for monitoring platform-wide escrow volumes, resolving trade disputes, and verifying farmers. |
+| **`/chat`** | **Direct Message Inbox** | Full-page conversation interface displaying active buyer-farmer negotiation threads and platform support conversations. |
+| **`/admin`** | **Admin Console** | Password-protected console: product listing management with image upload, platform-wide order oversight and escrow transitions, refund issue and reconciliation, and a support inbox. |
+| **`/admin/login`** | **Admin Authentication** | Signed-cookie login, rate limited, failing closed when unconfigured. |
 
 ---
 
@@ -427,6 +512,43 @@ npm run build
 # Start production server
 npm run start
 ```
+
+---
+
+## 🛠 Admin Console
+
+The console at **`/admin`** is the platform operator's control surface. It is protected by
+`proxy.ts` (Next.js 16's renamed middleware, running on the Node.js runtime) using a signed
+`httpOnly` session cookie, and every admin route re-verifies that session itself rather than
+trusting the gate alone.
+
+Set `ADMIN_PASSWORD` and `ADMIN_SESSION_SECRET` in `.env.local`, restart, then sign in at
+`/admin/login`. If either variable is unset, login **fails closed** — an absent password
+never means "no password required".
+
+| Tab | Capability |
+|---|---|
+| **Overview** | Escrow volume (funded orders only), order counts, awaiting-payment count, open refunds, support thread count |
+| **Products** | Create, edit and delete listings; image upload or URL with live preview; stock and organic flags; seller attribution |
+| **Orders** | Every order, filterable to platform-owned listings; advance escrow state (dispatch → deliver → release); issue refunds |
+| **Refunds** | Refund queue with amounts, reasons, processor IDs and statuses; manual reconciliation |
+| **Support** | Two-pane inbox for replying to buyer conversations as the platform |
+
+### First-party listings
+
+Listings created in the console are attributed by default to the platform's own
+**AgroX Admin** seller identity and marked with an *Admin* badge on the storefront. The
+composer can instead attribute a listing to any existing farmer; the `listed_by_admin` flag
+records the provenance independently, and is snapshotted onto the order item at purchase so
+the administrative order view still recognises it.
+
+### Refunds
+
+Refunds are issued against Paystack's refund API and reconciled through the
+`refund.processed` webhook. Partial refunds are supported, with a running total capped at
+the amount actually paid. Where no live Paystack key is configured, a refund is recorded
+honestly as `manual_pending` — the system states that no money moved rather than implying
+it did.
 
 ---
 
