@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { errorResponse } from '@/lib/api-error';
 import { getOrders, createOrder, getProductById } from '@/lib/db';
 import { isAuthedRequest } from '@/lib/admin-auth';
 import { OrderItem } from '@/types';
@@ -23,7 +24,7 @@ export async function GET(request: NextRequest) {
     const orders = await getOrders(farmerId, buyerEmail);
     return NextResponse.json({ success: true, orders });
   } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message || 'Failed to fetch orders' }, { status: 500 });
+    return errorResponse(error, 'Failed to fetch orders');
   }
 }
 
@@ -103,6 +104,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true, order }, { status: 201 });
   } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message || 'Failed to create order' }, { status: 500 });
+    return errorResponse(error, 'Failed to create order');
   }
 }

@@ -90,7 +90,6 @@ export default function AdminPortalPage() {
       setProducts(productsRes.products || []);
       setRefunds(refundsRes.refunds || []);
       setThreads(chatsRes.threads || []);
-      if (productsRes.warning) setError(productsRes.warning);
     } catch (e: any) {
       setError(e?.message || 'Could not load admin data.');
     } finally {
@@ -117,20 +116,12 @@ export default function AdminPortalPage() {
     return Array.from(seen.values());
   }, [products]);
 
-  const handleSaved = (product: Product, mode: 'created' | 'updated', warning?: string) => {
+  const handleSaved = (product: Product, mode: 'created' | 'updated') => {
     setProducts((prev) =>
       mode === 'created' ? [product, ...prev] : prev.map((p) => (p.id === product.id ? product : p))
     );
     setComposerOpen(false);
     setEditing(null);
-
-    // A degraded save still succeeded, but only into memory - say so rather than
-    // reporting it like a normal publish.
-    if (warning) {
-      setError(warning);
-      showToast(warning, 'error');
-      return;
-    }
     showToast(mode === 'created' ? `"${product.name}" is now live` : `"${product.name}" updated`);
   };
 

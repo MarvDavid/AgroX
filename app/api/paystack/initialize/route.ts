@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { errorResponse } from '@/lib/api-error';
 import { getOrderByReference, setOrderPaystackReference } from '@/lib/db';
 import {
   UNCONFIGURED_MESSAGE,
@@ -99,9 +100,6 @@ export async function POST(request: NextRequest) {
       amount: order.totalAmount,
     });
   } catch (error: any) {
-    return NextResponse.json(
-      { success: false, error: error.message || 'Failed to initialize Paystack checkout' },
-      { status: 500 }
-    );
+    return errorResponse(error, 'Failed to initialize Paystack checkout');
   }
 }

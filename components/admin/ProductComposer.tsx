@@ -13,7 +13,7 @@ interface ProductComposerProps {
   /** Farmers already on the marketplace, offered as attribution overrides. */
   sellers: Product['seller'][];
   onClose: () => void;
-  onSaved: (product: Product, mode: 'created' | 'updated', warning?: string) => void;
+  onSaved: (product: Product, mode: 'created' | 'updated') => void;
 }
 
 const emptyForm = {
@@ -143,7 +143,7 @@ export default function ProductComposer({
         return;
       }
 
-      onSaved(json.product, isEditing ? 'updated' : 'created', json.warning);
+      onSaved(json.product, isEditing ? 'updated' : 'created');
     } catch (e: any) {
       setError(e?.message || 'Could not save this product.');
     } finally {

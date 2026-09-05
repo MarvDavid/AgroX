@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { errorResponse } from '@/lib/api-error';
 import { getChats, getChatMessages, sendChatMessage, createOrGetChatThread } from '@/lib/db';
 import { isAuthedRequest } from '@/lib/admin-auth';
 import { ADMIN_SELLER_ID, ADMIN_SUPPORT_NAME } from '@/lib/constants';
@@ -38,7 +39,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ success: false, error: 'Invalid parameters' }, { status: 400 });
   } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message || 'Failed to fetch chat data' }, { status: 500 });
+    return errorResponse(error, 'Failed to fetch chat data');
   }
 }
 
@@ -91,6 +92,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true, message });
   } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message || 'Failed to process chat message' }, { status: 500 });
+    return errorResponse(error, 'Failed to process chat message');
   }
 }

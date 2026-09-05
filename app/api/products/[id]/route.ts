@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { errorResponse } from '@/lib/api-error';
 import { getProductById } from '@/lib/db';
 
 export async function GET(
@@ -13,6 +14,6 @@ export async function GET(
     }
     return NextResponse.json({ success: true, product });
   } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message || 'Failed to fetch product' }, { status: 500 });
+    return errorResponse(error, 'Failed to fetch product');
   }
 }

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { errorResponse } from '@/lib/api-error';
 import { getOrderByReference, updateOrderStatus } from '@/lib/db';
 import { createRefund, getRefunds, getRefundsForOrder, updateRefund } from '@/lib/db-admin';
 import { requireAdmin } from '@/lib/admin-auth';
@@ -28,10 +29,7 @@ export async function GET(request: NextRequest) {
     const refunds = await getRefunds();
     return NextResponse.json({ success: true, refunds });
   } catch (error: any) {
-    return NextResponse.json(
-      { success: false, error: error.message || 'Failed to load refunds' },
-      { status: 500 }
-    );
+    return errorResponse(error, 'Failed to load refunds');
   }
 }
 
@@ -154,10 +152,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true, refund: updated || refund }, { status: 201 });
   } catch (error: any) {
-    return NextResponse.json(
-      { success: false, error: error.message || 'Failed to issue refund' },
-      { status: 500 }
-    );
+    return errorResponse(error, 'Failed to issue refund');
   }
 }
 
@@ -191,9 +186,6 @@ export async function PATCH(request: NextRequest) {
 
     return NextResponse.json({ success: true, refund });
   } catch (error: any) {
-    return NextResponse.json(
-      { success: false, error: error.message || 'Failed to update refund' },
-      { status: 500 }
-    );
+    return errorResponse(error, 'Failed to update refund');
   }
 }

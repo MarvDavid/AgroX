@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { deleteProduct, getDbHealth, getProductById, updateProduct } from '@/lib/db';
+import { errorResponse } from '@/lib/api-error';
+import { deleteProduct, getProductById, updateProduct } from '@/lib/db';
 import { requireAdmin } from '@/lib/admin-auth';
 import { ASSIGNABLE_CATEGORIES } from '@/lib/constants';
 import { Product, ProductCategory } from '@/types';
@@ -75,19 +76,9 @@ export async function PATCH(
       return NextResponse.json({ success: false, error: 'Product not found.' }, { status: 404 });
     }
 
-    const health = getDbHealth();
-    return NextResponse.json({
-      success: true,
-      product: updated,
-      ...(health.degraded
-        ? { warning: `Saved locally only - the database is unreachable${health.reason ? ` (${health.reason})` : ''}.` }
-        : {}),
-    });
+    return NextResponse.json({ success: true, product: updated });
   } catch (error: any) {
-    return NextResponse.json(
-      { success: false, error: error.message || 'Failed to update product' },
-      { status: 500 }
-    );
+    return errorResponse(error, 'Failed to update product');
   }
 }
 
@@ -109,9 +100,6 @@ export async function DELETE(
     await deleteProduct(id);
     return NextResponse.json({ success: true, id });
   } catch (error: any) {
-    return NextResponse.json(
-      { success: false, error: error.message || 'Failed to delete product' },
-      { status: 500 }
-    );
+    return errorResponse(error, 'Failed to delete product');
   }
 }

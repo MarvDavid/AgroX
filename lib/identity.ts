@@ -22,11 +22,16 @@ export interface BuyerIdentity {
   email: string;
 }
 
-/** Demo values, kept so the seeded dashboard data still has something to show. */
+/**
+ * Placeholder used before a browser identity exists (server render, or storage
+ * unavailable). Deliberately blank rather than a fictional "John Doe Enterprise"
+ * with a fake email - an empty name is honest, invented data is not. Real values
+ * are filled in from what the buyer types at checkout.
+ */
 export const DEMO_BUYER: BuyerIdentity = {
-  id: 'buyer-001',
-  name: 'John Doe Enterprise',
-  email: 'john@agricbuyer.com',
+  id: 'buyer-anonymous',
+  name: '',
+  email: '',
 };
 
 function randomId(): string {
@@ -48,8 +53,8 @@ export function getBuyerIdentity(): BuyerIdentity {
       if (parsed?.id) {
         return {
           id: parsed.id,
-          name: parsed.name || DEMO_BUYER.name,
-          email: parsed.email || DEMO_BUYER.email,
+          name: parsed.name || '',
+          email: parsed.email || '',
         };
       }
     }

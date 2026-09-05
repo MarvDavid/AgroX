@@ -1,12 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { addProduct, getAllProductsForAdmin, getDbHealth } from '@/lib/db';
+import { errorResponse } from '@/lib/api-error';
+import { addProduct, getAllProductsForAdmin } from '@/lib/db';
 import { requireAdmin } from '@/lib/admin-auth';
 import { ADMIN_SELLER, ASSIGNABLE_CATEGORIES } from '@/lib/constants';
 import { Product, ProductCategory } from '@/types';
-
-/** Says plainly that a write only reached memory, instead of implying it persisted. */
-const DEGRADED_WARNING = (reason: string | null) =>
-  `Saved locally only - the database is unreachable${reason ? ` (${reason})` : ''}. This will be lost when the server restarts.`;
 
 export async function GET(request: NextRequest) {
   const denied = requireAdmin(request);
@@ -14,19 +11,9 @@ export async function GET(request: NextRequest) {
 
   try {
     const products = await getAllProductsForAdmin();
-    const health = getDbHealth();
-    return NextResponse.json({
-      success: true,
-      products,
-      // Surfaced so the console can say the data is local-only rather than
-      // letting an outage look like normal operation.
-      ...(health.degraded ? { warning: DEGRADED_WARNING(health.reason) } : {}),
-    });
+    return NextResponse.json({ success: true, products });
   } catch (error: any) {
-    return NextResponse.json(
-      { success: false, error: error.message || 'Failed to load products' },
-      { status: 500 }
-    );
+    return errorResponse(error, 'Failed to load products');
   }
 }
 
@@ -105,19 +92,8 @@ export async function POST(request: NextRequest) {
       listedByAdmin: true,
     });
 
-    const health = getDbHealth();
-    return NextResponse.json(
-      {
-        success: true,
-        product,
-        ...(health.degraded ? { warning: DEGRADED_WARNING(health.reason) } : {}),
-      },
-      { status: 201 }
-    );
+    return NextResponse.json({ success: true, product }, { status: 201 });
   } catch (error: any) {
-    return NextResponse.json(
-      { success: false, error: error.message || 'Failed to create product' },
-      { status: 500 }
-    );
+    return errorResponse(error, 'Failed to create product');
   }
 }

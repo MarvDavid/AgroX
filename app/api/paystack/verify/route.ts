@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { errorResponse } from '@/lib/api-error';
 import { getOrderByPaystackReference, transitionOrderStatus } from '@/lib/db';
 import {
   UNCONFIGURED_MESSAGE,
@@ -121,9 +122,6 @@ export async function POST(request: NextRequest) {
       order: updated || (await getOrderByPaystackReference(reference)),
     });
   } catch (error: any) {
-    return NextResponse.json(
-      { success: false, error: error.message || 'Failed to verify Paystack payment' },
-      { status: 500 }
-    );
+    return errorResponse(error, 'Failed to verify Paystack payment');
   }
 }

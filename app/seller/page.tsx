@@ -19,6 +19,7 @@ import { formatCurrency } from '@/lib/utils';
 import { EscrowStatus, Product, Order } from '@/types';
 import StatusBadge from '@/components/ui/StatusBadge';
 import { ASSIGNABLE_CATEGORIES } from '@/lib/constants';
+import { SellerIdentity, deriveSellers, resolveSeller, setStoredSellerId } from '@/lib/seller-identity';
 
 export default function SellerPortalPage() {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -26,6 +27,9 @@ export default function SellerPortalPage() {
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState('');
+  // Derived from the sellers present in Postgres, not hardcoded.
+  const [sellers, setSellers] = useState<SellerIdentity[]>([]);
+  const [activeSeller, setActiveSeller] = useState<SellerIdentity | null>(null);
 
   const [products, setProducts] = useState<Product[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
@@ -35,8 +39,8 @@ export default function SellerPortalPage() {
   const [chatProduct, setChatProduct] = useState<{ id: string; name: string; sellerId: string; sellerName: string } | null>(null);
 
   const [formData, setFormData] = useState({
-    farmName: 'SunValley Grain Farms',
-    location: 'Oyo State, Nigeria',
+    farmName: '',
+    location: '',
     category: 'Fresh Produce',
     productTitle: '',
     price: '',
@@ -54,18 +58,25 @@ export default function SellerPortalPage() {
   const fetchFarmerData = async () => {
     setLoading(true);
     try {
-      const [resProd, resOrd] = await Promise.all([
-        fetch('/api/products'),
-        fetch('/api/orders?farmerId=s-101'),
-      ]);
+      const resProd = await fetch('/api/products');
       const dataProd = await resProd.json();
-      const dataOrd = await resOrd.json();
 
       if (dataProd.success && dataProd.products) {
         setProducts(dataProd.products);
-      }
-      if (dataOrd.success && dataOrd.orders) {
-        setOrders(dataOrd.orders);
+
+        const available = deriveSellers(dataProd.products);
+        setSellers(available);
+        const seller = resolveSeller(dataProd.products);
+        setActiveSeller(seller);
+
+        if (seller) {
+          setFormData((prev) => ({ ...prev, farmName: seller.name, location: seller.location }));
+          const resOrd = await fetch(`/api/orders?farmerId=${encodeURIComponent(seller.id)}`);
+          const dataOrd = await resOrd.json();
+          if (dataOrd.success && dataOrd.orders) setOrders(dataOrd.orders);
+        } else {
+          setOrders([]);
+        }
       }
     } catch (err) {
       console.error('Failed to fetch farmer data:', err);
@@ -91,13 +102,7 @@ export default function SellerPortalPage() {
           stockCount: Number(formData.stockCount),
           image: formData.image,
           isOrganic: formData.isOrganic,
-          seller: {
-            id: 's-101',
-            name: formData.farmName,
-            location: formData.location,
-            verified: true,
-            rating: 4.9,
-          },
+          seller: activeSeller,
         }),
       });
 
@@ -219,8 +224,37 @@ export default function SellerPortalPage() {
             {/* Header Action */}
             <div className="agrox-page-header" style={{ marginBottom: 0 }}>
               <div>
-                <h1 style={{ fontSize: 'clamp(1.4rem, 3.5vw, 1.85rem)', fontWeight: 800, lineHeight: 1.25 }}>Good morning, SunValley Farms</h1>
+                <h1 style={{ fontSize: 'clamp(1.4rem, 3.5vw, 1.85rem)', fontWeight: 800, lineHeight: 1.25 }}>{activeSeller ? `Good morning, ${activeSeller.name}` : 'Farmer Portal'}</h1>
                 <p style={{ color: 'var(--color-text-secondary)', marginTop: '0.25rem', fontSize: '0.9rem' }}>Submit produce listings & manage buyer escrow shipments.</p>
+
+                {/* Sellers come from the products table. Until real farmer
+                    accounts exist, this is how the portal knows who it is
+                    acting as - previously a hardcoded 's-101'. */}
+                {sellers.length > 1 && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.6rem' }}>
+                    <label className="agrox-label" style={{ marginBottom: 0, fontSize: '0.75rem' }} htmlFor="seller-switch">
+                      Acting as
+                    </label>
+                    <select
+                      id="seller-switch"
+                      className="agrox-input"
+                      style={{ width: 'auto', maxWidth: '260px', fontSize: '0.8rem', paddingBlock: '0.35rem' }}
+                      value={activeSeller?.id || ''}
+                      onChange={(e) => {
+                        const next = sellers.find((x) => x.id === e.target.value) || null;
+                        if (!next) return;
+                        setStoredSellerId(next.id);
+                        setActiveSeller(next);
+                        setFormData((prev) => ({ ...prev, farmName: next.name, location: next.location }));
+                        fetchFarmerData();
+                      }}
+                    >
+                      {sellers.map((x) => (
+                        <option key={x.id} value={x.id}>{x.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
               </div>
               <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                 <button 
@@ -451,7 +485,7 @@ export default function SellerPortalPage() {
         isOpen={isChatOpen}
         onClose={() => setIsChatOpen(false)}
         targetProduct={chatProduct}
-        currentUser={{ id: 's-101', name: 'SunValley Grain Farms', role: 'farmer' }}
+        currentUser={{ id: activeSeller?.id || 'farmer-unassigned', name: activeSeller?.name || 'Farmer', role: 'farmer' }}
       />
     </PageShell>
   );

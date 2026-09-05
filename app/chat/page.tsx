@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { ChatMessage, ChatThread } from '@/types';
 import { DEMO_BUYER, getBuyerIdentity } from '@/lib/identity';
+import { SellerIdentity, resolveSeller } from '@/lib/seller-identity';
 
 export default function DedicatedChatPage() {
   const [threads, setThreads] = useState<ChatThread[]>([]);
@@ -22,21 +23,33 @@ export default function DedicatedChatPage() {
   const [loading, setLoading] = useState(true);
   const [role, setRole] = useState<'buyer' | 'farmer'>('buyer');
   const [identity, setIdentity] = useState(DEMO_BUYER);
+  const [farmer, setFarmer] = useState<SellerIdentity | null>(null);
   const [mobileView, setMobileView] = useState<'list' | 'chat'>('list');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Identity is only available in the browser, so it is read after mount.
   useEffect(() => {
     setIdentity(getBuyerIdentity());
+    // The farmer identity comes from the sellers in Postgres rather than a
+    // hardcoded 's-101'.
+    (async () => {
+      try {
+        const res = await fetch('/api/products');
+        const data = await res.json();
+        if (data.success && data.products) setFarmer(resolveSeller(data.products));
+      } catch {
+        setFarmer(null);
+      }
+    })();
   }, []);
 
   const currentUser = role === 'buyer'
     ? { id: identity.id, name: identity.name, role: 'buyer' as const }
-    : { id: 's-101', name: 'SunValley Grain Farms', role: 'farmer' as const };
+    : { id: farmer?.id || 'farmer-unassigned', name: farmer?.name || 'Farmer', role: 'farmer' as const };
 
   useEffect(() => {
     fetchThreads();
-  }, [role, identity.id]);
+  }, [role, identity.id, farmer?.id]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });

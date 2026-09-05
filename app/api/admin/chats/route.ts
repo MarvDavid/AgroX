@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { errorResponse } from '@/lib/api-error';
 import { getChats, getChatMessages, sendChatMessage } from '@/lib/db';
 import { requireAdmin } from '@/lib/admin-auth';
 import { ADMIN_SELLER_ID, ADMIN_SUPPORT_NAME } from '@/lib/constants';
@@ -26,10 +27,7 @@ export async function GET(request: NextRequest) {
     const threads = await getChats();
     return NextResponse.json({ success: true, threads });
   } catch (error: any) {
-    return NextResponse.json(
-      { success: false, error: error.message || 'Failed to load conversations' },
-      { status: 500 }
-    );
+    return errorResponse(error, 'Failed to load conversations');
   }
 }
 
@@ -59,9 +57,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true, message }, { status: 201 });
   } catch (error: any) {
-    return NextResponse.json(
-      { success: false, error: error.message || 'Failed to send reply' },
-      { status: 500 }
-    );
+    return errorResponse(error, 'Failed to send reply');
   }
 }

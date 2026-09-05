@@ -392,7 +392,7 @@ Payment routes have exactly three states, with no fallthrough between them:
 
 A placeholder value such as `sk_test_placeholder_key` counts as *not configured* - the key's shape is validated, not merely its presence, so a junk key can never be mistaken for a live one.
 
-> **Note**: If Supabase is unavailable, AgroX falls back to an in-memory store so the UI stays usable. Writes made in that state are flagged in the response (and shown in the admin console) as *saved locally only*, rather than being silently reported as persisted.
+> **Note**: Postgres is the only source of truth. There is no in-memory or mock fallback: if the database is unreachable, API routes return **503 `DATABASE_UNAVAILABLE`** with a specific message rather than serving placeholder data. An empty table renders as an empty catalogue, not as demo products.
 
 ---
 
@@ -437,3 +437,4 @@ npm run start
 * **Payment Verification**: An order becomes `paid_escrow_secured` only when Paystack confirms the transaction *and* the amount and currency match the stored order. Cancelling or erroring leaves it `pending`.
 * **Cryptographic Signatures**: Webhook payloads are verified using HMAC-SHA512 with timing-safe comparisons. Without a configured secret the webhook refuses to process at all - it never accepts unsigned payloads.
 * **Idempotency**: Payment transitions use a conditional update keyed on the current status, and webhook deliveries are de-duplicated by event id, so the verify call and a retried webhook cannot double-apply.
+* **No Fabricated Data**: The app ships no mock catalogue, no seeded demo orders or conversations, and no invented seller/buyer personas. Everything rendered comes from Postgres; the farmer portal derives its identity from the sellers present in the products table.

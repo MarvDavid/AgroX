@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { errorResponse } from '@/lib/api-error';
 import { getOrders, updateOrderStatus } from '@/lib/db';
 import { requireAdmin } from '@/lib/admin-auth';
 import { EscrowStatus } from '@/types';
@@ -26,10 +27,7 @@ export async function GET(request: NextRequest) {
     const orders = await getOrders(undefined, undefined, { adminListingsOnly });
     return NextResponse.json({ success: true, orders });
   } catch (error: any) {
-    return NextResponse.json(
-      { success: false, error: error.message || 'Failed to load orders' },
-      { status: 500 }
-    );
+    return errorResponse(error, 'Failed to load orders');
   }
 }
 
@@ -59,9 +57,6 @@ export async function PATCH(request: NextRequest) {
 
     return NextResponse.json({ success: true, order });
   } catch (error: any) {
-    return NextResponse.json(
-      { success: false, error: error.message || 'Failed to update order' },
-      { status: 500 }
-    );
+    return errorResponse(error, 'Failed to update order');
   }
 }

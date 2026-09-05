@@ -24,7 +24,8 @@ export default function ChatDrawer({
   isOpen,
   onClose,
   targetProduct,
-  currentUser = { id: 'buyer-001', name: 'John Doe Enterprise', role: 'buyer' },
+  // No fabricated default persona; callers pass the real local identity.
+  currentUser = { id: 'buyer-anonymous', name: 'Guest', role: 'buyer' },
 }: ChatDrawerProps) {
   const [threads, setThreads] = useState<ChatThread[]>([]);
   const [activeThread, setActiveThread] = useState<ChatThread | null>(null);

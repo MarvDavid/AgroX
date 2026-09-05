@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { errorResponse } from '@/lib/api-error';
 import { getProducts, addProduct } from '@/lib/db';
 import { ADMIN_SELLER_ID } from '@/lib/constants';
 import { isAuthedRequest } from '@/lib/admin-auth';
@@ -12,7 +13,7 @@ export async function GET(request: NextRequest) {
     const products = await getProducts(category, query);
     return NextResponse.json({ success: true, products });
   } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message || 'Failed to fetch products' }, { status: 500 });
+    return errorResponse(error, 'Failed to fetch products');
   }
 }
 
@@ -23,6 +24,12 @@ export async function POST(request: NextRequest) {
 
     if (!name || !category || !price) {
       return NextResponse.json({ success: false, error: 'Missing required product fields' }, { status: 400 });
+    }
+    if (!seller?.id || !seller?.name) {
+      return NextResponse.json(
+        { success: false, error: 'A seller with an id and name is required.' },
+        { status: 400 }
+      );
     }
 
     // This route is public (the farmer portal posts to it), and it accepts a
@@ -48,15 +55,12 @@ export async function POST(request: NextRequest) {
       unit: unit || 'bag (50kg)',
       rating: 5.0,
       reviewsCount: 1,
-      image: image || 'https://images.unsplash.com/photo-1595855759920-86582396756a?auto=format&fit=crop&q=80&w=800',
-      description: description || 'Fresh farm produce verified by AgroX logistics.',
-      seller: seller || {
-        id: 's-farmer-demo',
-        name: 'SunValley Grain Farms',
-        location: 'Oyo State, Nigeria',
-        verified: true,
-        rating: 4.9,
-      },
+      // No invented fallbacks. These used to default to a single stock photo, a
+      // generic blurb and a fictional "SunValley Grain Farms" seller, which wrote
+      // fabricated data into real product rows.
+      image: String(image || '').trim(),
+      description: String(description || '').trim(),
+      seller,
       inStock: stockCount === undefined ? true : Number(stockCount) > 0,
       stockCount: stockCount !== undefined ? Number(stockCount) : 100,
       isOrganic: Boolean(isOrganic),
@@ -68,6 +72,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true, product: createdProduct }, { status: 201 });
   } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message || 'Failed to create product listing' }, { status: 500 });
+    return errorResponse(error, 'Failed to create product listing');
   }
 }
