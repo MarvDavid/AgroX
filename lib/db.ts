@@ -44,9 +44,20 @@ function isConnectivityFailure(error: any): boolean {
 
 /** Normalises a supabase-js error into something a route can act on. */
 function raise(error: any, action: string): never {
+  console.error(`[db] ${action} failed:`, {
+    message: error?.message,
+    code: error?.code,
+    details: error?.details,
+    hint: error?.hint,
+    status: error?.status,
+    cause: error?.cause?.code || error?.cause?.message,
+  });
+
+  const detail = error?.message ? ` (${error.message})` : '';
+
   if (isConnectivityFailure(error)) {
     throw new DatabaseUnavailableError(
-      `Could not reach the database while trying to ${action}. Check that the Supabase project is running.`
+      `Could not reach the database while trying to ${action}${detail}. Check that the Supabase project is running.`
     );
   }
   throw new Error(`Could not ${action}: ${error?.message || 'unknown database error'}`);

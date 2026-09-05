@@ -7,15 +7,17 @@ import { createClient } from '@supabase/supabase-js';
 // or SUPABASE_SECRET_KEY. It used to, which meant a service-role key dropped into
 // any of those slots would silently become "the anon client" and mask the fact
 // that RLS was being bypassed. Privileged access lives in lib/supabase-admin.ts.
-const supabaseUrl =
+const supabaseUrl = (
   process.env.NEXT_PUBLIC_SUPABASE_URL ||
   process.env.SUPABASE_URL ||
-  '';
+  ''
+).trim();
 
-const supabaseAnonKey =
+const supabaseAnonKey = (
   process.env.NEXT_PUBLIC_SUPABASE_PUBLIC_KEY ||
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-  '';
+  ''
+).trim();
 
 // A secret key here would be a misconfiguration, not a convenience: warn loudly
 // rather than quietly running the whole app with RLS bypassed.

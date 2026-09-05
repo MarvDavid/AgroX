@@ -44,9 +44,25 @@ function isConnectivityFailure(error: any): boolean {
 }
 
 function raise(error: any, action: string): never {
+  // Always log the full error: on a hosted deploy this is the only place the
+  // underlying cause is visible.
+  console.error(`[db-admin] ${action} failed:`, {
+    message: error?.message,
+    code: error?.code,
+    details: error?.details,
+    hint: error?.hint,
+    status: error?.status,
+    cause: error?.cause?.code || error?.cause?.message,
+  });
+
+  // The cause is kept in the message rather than discarded - collapsing every
+  // failure into a generic "could not reach the database" makes a
+  // misconfiguration indistinguishable from an outage.
+  const detail = error?.message ? ` (${error.message})` : '';
+
   if (isConnectivityFailure(error)) {
     throw new AdminDatabaseUnavailableError(
-      `Could not reach the database while trying to ${action}.`
+      `Could not reach the database while trying to ${action}${detail}.`
     );
   }
   throw new Error(`Could not ${action}: ${error?.message || 'unknown database error'}`);
