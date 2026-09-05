@@ -16,7 +16,7 @@ interface ChatDrawerProps {
   currentUser?: {
     id: string;
     name: string;
-    role: 'buyer' | 'farmer';
+    role: 'buyer' | 'farmer' | 'admin';
   };
 }
 
@@ -73,7 +73,7 @@ export default function ChatDrawer({
         }
       } else {
         // Load user threads
-        const res = await fetch('/api/chat?action=threads');
+        const res = await fetch(`/api/chat?action=threads&userId=${encodeURIComponent(currentUser.id)}`);
         const data = await res.json();
         if (data.success && data.threads) {
           setThreads(data.threads);
@@ -273,7 +273,7 @@ export default function ChatDrawer({
                       gap: '0.35rem',
                     }}
                   >
-                    {msg.senderRole === 'farmer' ? <Store size={12} /> : <User size={12} />}
+                    {msg.senderRole === 'admin' ? <ShieldCheck size={12} /> : msg.senderRole === 'farmer' ? <Store size={12} /> : <User size={12} />}
                     {msg.senderName} ({msg.senderRole})
                   </div>
                   <div

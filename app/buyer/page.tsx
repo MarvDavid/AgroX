@@ -16,21 +16,27 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { formatCurrency } from '@/lib/utils';
-import { Order } from '@/types';
+import { EscrowStatus, Order } from '@/types';
+import StatusBadge from '@/components/ui/StatusBadge';
+import { DEMO_BUYER, getBuyerIdentity } from '@/lib/identity';
+import { ADMIN_SELLER_ID, ADMIN_SUPPORT_NAME } from '@/lib/constants';
 
 export default function BuyerDashboardPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [chatProduct, setChatProduct] = useState<{ id: string; name: string; sellerId: string; sellerName: string } | null>(null);
+  const [identity, setIdentity] = useState(DEMO_BUYER);
 
   useEffect(() => {
-    fetchOrders();
+    const current = getBuyerIdentity();
+    setIdentity(current);
+    fetchOrders(current.email);
   }, []);
 
-  const fetchOrders = async () => {
+  const fetchOrders = async (buyerEmail: string) => {
     try {
-      const res = await fetch('/api/orders?buyerEmail=john@agricbuyer.com');
+      const res = await fetch(`/api/orders?buyerEmail=${encodeURIComponent(buyerEmail)}`);
       const data = await res.json();
       if (data.success && data.orders) {
         setOrders(data.orders);
@@ -52,35 +58,29 @@ export default function BuyerDashboardPage() {
     setIsChatOpen(true);
   };
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'paid_escrow_secured':
-        return (
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', background: 'rgba(46, 125, 50, 0.12)', color: 'var(--color-success)', padding: '0.35rem 0.75rem', borderRadius: '12px', fontSize: '0.8rem', fontWeight: 700 }}>
-            <ShieldCheck size={14} /> Escrow Secured
-          </span>
-        );
-      case 'dispatched':
-        return (
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', background: 'rgba(2, 136, 209, 0.12)', color: '#0288D1', padding: '0.35rem 0.75rem', borderRadius: '12px', fontSize: '0.8rem', fontWeight: 700 }}>
-            <Truck size={14} /> Freight Dispatched
-          </span>
-        );
-      case 'delivered':
-      case 'escrow_released':
-        return (
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', background: 'rgba(76, 175, 80, 0.2)', color: '#2E7D32', padding: '0.35rem 0.75rem', borderRadius: '12px', fontSize: '0.8rem', fontWeight: 700 }}>
-            <CheckCircle2 size={14} /> Completed & Released
-          </span>
-        );
-      default:
-        return (
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', background: 'rgba(255, 179, 0, 0.15)', color: '#F57F17', padding: '0.35rem 0.75rem', borderRadius: '12px', fontSize: '0.8rem', fontWeight: 700 }}>
-            <Clock size={14} /> Pending Payment
-          </span>
-        );
-    }
+  // Was four hand-rolled pills here, disagreeing with the admin and seller
+  // versions on both shape and colour. StatusBadge is the single source now.
+  const getStatusBadge = (status: string) => <StatusBadge status={status as EscrowStatus} size={14} />;
+
+  // Only funded orders represent money actually held in escrow; summing every
+  // order would count abandoned, unpaid carts as spend.
+  const FUNDED: EscrowStatus[] = ['paid_escrow_secured', 'dispatched', 'delivered', 'escrow_released'];
+  const fundedTotal = orders
+    .filter((o) => FUNDED.includes(o.escrowStatus))
+    .reduce((acc, o) => acc + o.totalAmount, 0);
+
+  const openSupport = (order: Order) => {
+    // Reuses the existing chat thread machinery with the platform as the
+    // counterparty, so no new component is needed.
+    setChatProduct({
+      id: `support-${order.reference}`,
+      name: `Order ${order.reference}`,
+      sellerId: ADMIN_SELLER_ID,
+      sellerName: ADMIN_SUPPORT_NAME,
+    });
+    setIsChatOpen(true);
   };
+
 
   return (
     <PageShell muted wide>
@@ -112,7 +112,7 @@ export default function BuyerDashboardPage() {
           <div className="agrox-stat-card">
             <div className="agrox-stat-label">Total Procurement Spent</div>
             <div className="agrox-stat-value">
-              {formatCurrency(orders.reduce((acc, curr) => acc + curr.totalAmount, 0))}
+              {formatCurrency(fundedTotal)}
             </div>
           </div>
           <div className="agrox-stat-card">
@@ -190,8 +190,16 @@ export default function BuyerDashboardPage() {
                     <span style={{ color: 'var(--color-text-secondary)', fontSize: '0.8rem' }}>
                       Delivery: {order.shippingAddress || 'Default Warehouse'}
                     </span>
-                    <span style={{ fontWeight: 800, fontSize: '1rem', color: 'var(--color-action-primary)' }}>
-                      Total: {formatCurrency(order.totalAmount)}
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+                      <button
+                        onClick={() => openSupport(order)}
+                        className="agrox-btn agrox-btn-outline agrox-btn-sm"
+                      >
+                        <MessageSquare size={13} /> Contact Support
+                      </button>
+                      <span style={{ fontWeight: 800, fontSize: '1rem', color: 'var(--color-action-primary)' }}>
+                        Total: {formatCurrency(order.totalAmount)}
+                      </span>
                     </span>
                   </div>
                 </div>
@@ -204,7 +212,7 @@ export default function BuyerDashboardPage() {
         isOpen={isChatOpen}
         onClose={() => setIsChatOpen(false)}
         targetProduct={chatProduct}
-        currentUser={{ id: 'buyer-001', name: 'John Doe Enterprise', role: 'buyer' }}
+        currentUser={{ id: identity.id, name: identity.name, role: 'buyer' }}
       />
     </PageShell>
   );

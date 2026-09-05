@@ -3,6 +3,7 @@
 import React from 'react';
 import { Star, ShoppingCart, MapPin, CheckCircle2 } from 'lucide-react';
 import { Product } from '@/types';
+import { ADMIN_SELLER_ID } from '@/lib/constants';
 import { useCart } from '@/context/CartContext';
 import { formatCurrency } from '@/lib/utils';
 
@@ -64,6 +65,11 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
           <span style={{ minWidth: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{product.seller.location}</span>
           {product.seller.verified && (
             <CheckCircle2 size={14} style={{ color: 'var(--color-action-primary)', flexShrink: 0 }} />
+          )}
+          {product.seller.id === ADMIN_SELLER_ID && (
+            <span className="agrox-badge agrox-badge--admin" style={{ flexShrink: 0 }}>
+              Admin
+            </span>
           )}
         </div>
 

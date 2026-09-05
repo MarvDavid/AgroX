@@ -8,6 +8,7 @@ import ProductCard from '@/components/products/ProductCard';
 import ProductDetailModal from '@/components/products/ProductDetailModal';
 import ChatDrawer from '@/components/chat/ChatDrawer';
 import { Product, ProductCategory } from '@/types';
+import { DEMO_BUYER, getBuyerIdentity } from '@/lib/identity';
 import { Filter, RefreshCw } from 'lucide-react';
 
 export default function HomePage() {
@@ -21,6 +22,11 @@ export default function HomePage() {
 
   // Chat State
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [identity, setIdentity] = useState(DEMO_BUYER);
+
+  useEffect(() => {
+    setIdentity(getBuyerIdentity());
+  }, []);
   const [chatProduct, setChatProduct] = useState<{ id: string; name: string; sellerId: string; sellerName: string } | null>(null);
 
   useEffect(() => {
@@ -189,7 +195,7 @@ export default function HomePage() {
         isOpen={isChatOpen}
         onClose={() => setIsChatOpen(false)}
         targetProduct={chatProduct}
-        currentUser={{ id: 'buyer-001', name: 'John Doe Enterprise', role: 'buyer' }}
+        currentUser={{ id: identity.id, name: identity.name, role: 'buyer' }}
       />
     </PageShell>
   );

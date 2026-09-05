@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getProducts, addProduct } from '@/lib/db';
+import { ADMIN_SELLER_ID } from '@/lib/constants';
+import { isAuthedRequest } from '@/lib/admin-auth';
 
 export async function GET(request: NextRequest) {
   try {
@@ -23,6 +25,21 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Missing required product fields' }, { status: 400 });
     }
 
+    // This route is public (the farmer portal posts to it), and it accepts a
+    // caller-supplied `seller` object. Without this check anyone could POST
+    // seller.id = 's-admin' / verified: true and mint a listing that the
+    // storefront presents as an official, platform-owned product.
+    // Admin-attributed listings must come through /api/admin/products.
+    const claimsAdminIdentity =
+      seller?.id === ADMIN_SELLER_ID || Boolean(body.listedByAdmin);
+
+    if (claimsAdminIdentity && !isAuthedRequest(request)) {
+      return NextResponse.json(
+        { success: false, error: 'Not authorized to publish listings as AgroX Admin.' },
+        { status: 403 }
+      );
+    }
+
     const createdProduct = await addProduct({
       name,
       category,
@@ -40,10 +57,13 @@ export async function POST(request: NextRequest) {
         verified: true,
         rating: 4.9,
       },
-      inStock: true,
-      stockCount: stockCount ? Number(stockCount) : 100,
+      inStock: stockCount === undefined ? true : Number(stockCount) > 0,
+      stockCount: stockCount !== undefined ? Number(stockCount) : 100,
       isOrganic: Boolean(isOrganic),
-      featured: true,
+      // Was hardcoded true, which made "featured" meaningless - every listing
+      // ever created through the app claimed the front page.
+      featured: Boolean(body.featured),
+      listedByAdmin: Boolean(body.listedByAdmin),
     });
 
     return NextResponse.json({ success: true, product: createdProduct }, { status: 201 });

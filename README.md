@@ -340,7 +340,8 @@ To initialize the Supabase PostgreSQL database:
   * `idx_orders_buyer_email` & `idx_orders_reference` for sub-millisecond order lookups.
   * `idx_messages_chat_id_created` for ordered message retrieval.
   * `idx_products_category` & `idx_products_in_stock` for marketplace filtering.
-* **Row Level Security (RLS)**: Enforces access rules on all public tables (`products`, `orders`, `chats`, `messages`).
+* **Row Level Security (RLS)**: Enabled on every table. `products`, `orders`, `chats` and `messages` carry permissive policies (the API routes enforce access, since there is no end-user auth yet); `refunds` and `processed_webhook_events` have **no** policies at all and are reachable only via the service-role key.
+* **Re-runnable**: `supabase-schema.sql` is the single source of truth and is safe to apply repeatedly. `npm run setup-db` reads and executes it.
 * **Realtime Publication**: Automatically enables WebSocket event broadcast on `public.messages` and `public.chats`.
 
 ---
@@ -352,15 +353,46 @@ Create a `.env.local` file in the project root with the following variables:
 ```env
 # Supabase Configuration
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-public-key
-SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+
+# Publishable (browser-safe) key. MUST be the sb_publishable_ / anon key.
+# Never put a service-role or sb_secret_ key on a NEXT_PUBLIC_ variable: those
+# are inlined into the client bundle by the compiler.
+NEXT_PUBLIC_SUPABASE_PUBLIC_KEY=sb_publishable_...
+NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_...
+
+# Server-only. Bypasses RLS; used by lib/supabase-admin.ts for the refunds
+# table, webhook idempotency, and product-image uploads.
+SUPABASE_SERVICE_ROLE_KEY=sb_secret_...
+
+# Direct Postgres connection, used only by `npm run setup-db`.
+DATABASE_URL=postgresql://...
+
+# Admin console. Login fails closed if either is unset - an absent password
+# never means "no password required".
+ADMIN_PASSWORD=choose-a-strong-password
+ADMIN_SESSION_SECRET=a-long-random-string
 
 # Paystack Payment Gateway
-NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY=your_paystack_public_key
-PAYSTACK_SECRET_KEY=your_paystack_secret_key
+NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY=pk_test_...
+PAYSTACK_SECRET_KEY=sk_test_...
+
+# Optional: exercise checkout end-to-end without Paystack keys.
+PAYSTACK_SANDBOX_MODE=true
 ```
 
-> **Note**: If Supabase or Paystack credentials are not provided, AgroX gracefully operates in **Offline / Simulation Mode**, allowing full UI testing, in-memory inventory listing, simulated escrow checkout, and mock negotiation chats.
+### How payments behave per configuration
+
+Payment routes have exactly three states, with no fallthrough between them:
+
+| Configuration | Behaviour |
+| --- | --- |
+| Valid `sk_test_` / `sk_live_` secret | Live: real Paystack calls; failures surface as failures. |
+| No valid key, `PAYSTACK_SANDBOX_MODE=true` | Sandbox: checkout completes, clearly labelled, no money moves. |
+| Neither | Checkout returns **503** and says payments are not configured. |
+
+A placeholder value such as `sk_test_placeholder_key` counts as *not configured* - the key's shape is validated, not merely its presence, so a junk key can never be mistaken for a live one.
+
+> **Note**: If Supabase is unavailable, AgroX falls back to an in-memory store so the UI stays usable. Writes made in that state are flagged in the response (and shown in the admin console) as *saved locally only*, rather than being silently reported as persisted.
 
 ---
 
@@ -399,6 +431,9 @@ npm run start
 ---
 
 ## 🛡 Security & Best Practices
-* **Zero Client-Side Secret Exposure**: Paystack secret keys and Supabase service role keys are strictly accessed within Serverless API handlers.
-* **Cryptographic Signatures**: Webhook payloads are verified using HMAC-SHA512 with timing-safe comparisons.
-* **Escrow Verification**: Order dispatches require matching reference tokens before payouts are released.
+* **Server-Only Secrets**: Paystack secret keys and the Supabase service-role key are read only inside route handlers, and the service-role client (`lib/supabase-admin.ts`) refuses to load in a browser bundle. Nothing secret is exposed through a `NEXT_PUBLIC_` variable.
+* **Admin Gate**: `/admin` and `/api/admin/*` are gated by `proxy.ts` (Next 16's rename of middleware, Node runtime) using a signed, httpOnly session cookie. Each admin handler re-checks the session itself rather than trusting the proxy alone, and login is rate-limited with timing-safe comparisons.
+* **Server-Side Pricing**: `POST /api/orders` accepts only `{productId, quantity}` and prices every line from the database, so a tampered client cannot set its own total.
+* **Payment Verification**: An order becomes `paid_escrow_secured` only when Paystack confirms the transaction *and* the amount and currency match the stored order. Cancelling or erroring leaves it `pending`.
+* **Cryptographic Signatures**: Webhook payloads are verified using HMAC-SHA512 with timing-safe comparisons. Without a configured secret the webhook refuses to process at all - it never accepts unsigned payloads.
+* **Idempotency**: Payment transitions use a conditional update keyed on the current status, and webhook deliveries are de-duplicated by event id, so the verify call and a retried webhook cannot double-apply.

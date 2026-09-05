@@ -50,6 +50,10 @@
 
   --color-success: var(--primitive-success-600);
   --color-error: var(--primitive-error-600);
+  /* Status colours that dashboards previously hardcoded as raw hex
+     (#0288D1 / #F57F17) inline in buyer/page.tsx. */
+  --color-warning: #F57F17;
+  --color-info: #0288D1;
 
   --color-glass-bg: var(--primitive-glass-bg);
   --color-glass-border: var(--primitive-glass-border);
@@ -366,6 +370,15 @@ img {
   box-shadow: 0 0 0 3px var(--color-border-subtle);
 }
 
+select.agrox-input {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23455A64' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.7rem center;
+  padding-right: 2.25rem;
+}
+
 textarea.agrox-input {
   resize: vertical;
   min-height: 5rem;
@@ -562,6 +575,96 @@ textarea.agrox-input {
 /* Compact icon-only variant used across the nav. */
 .agrox-btn-icon {
   padding: 0.55rem 0.75rem;
+}
+
+/* Smaller variant for table row actions, where the default 0.9rem button is
+   too heavy against 0.85rem cell text. */
+.agrox-btn-sm {
+  padding: 0.4rem 0.7rem;
+  font-size: 0.8rem;
+  gap: 0.35rem;
+}
+
+/* Destructive actions (delete a listing, deny a refund). */
+.agrox-btn-danger {
+  background: var(--color-error);
+  color: var(--primitive-white);
+  box-shadow: 0 4px 12px rgba(211, 47, 47, 0.22);
+}
+
+.agrox-btn-danger:hover {
+  background: #B71C1C;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(211, 47, 47, 0.3);
+}
+
+/* Every page was faking this with an inline opacity plus a disabled attribute,
+   which left the button still looking clickable on hover. */
+.agrox-btn:disabled,
+.agrox-btn[aria-disabled='true'] {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
+  box-shadow: none;
+  transform: none;
+}
+
+/* ==================================================
+   STATUS BADGES
+   One pill for every status label. Replaces three divergent hand-rolled
+   versions: buyer/page.tsx used borderRadius 12px, admin/page.tsx used
+   --radius-sm, and seller/page.tsx coloured every status green.
+   Naming note: .agrox-badge is this status pill; .agrox-card-badge is the
+   absolutely-positioned overlay on a product image; .agrox-cart-badge is the
+   numeric counter on the nav cart icon. They are not interchangeable.
+   ================================================== */
+
+.agrox-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.28rem 0.6rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.3;
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  background: var(--color-surface-muted);
+  color: var(--color-text-secondary);
+}
+
+.agrox-badge--success {
+  background: rgba(67, 160, 71, 0.12);
+  color: var(--color-success);
+}
+
+.agrox-badge--warn {
+  background: rgba(245, 127, 23, 0.14);
+  color: var(--color-warning);
+}
+
+.agrox-badge--error {
+  background: rgba(211, 47, 47, 0.1);
+  color: var(--color-error);
+}
+
+.agrox-badge--info {
+  background: rgba(2, 136, 209, 0.12);
+  color: var(--color-info);
+}
+
+.agrox-badge--neutral {
+  background: var(--color-surface-muted);
+  color: var(--color-text-secondary);
+}
+
+/* Marks a platform-owned listing on storefront cards. */
+.agrox-badge--admin {
+  background: var(--primitive-green-100);
+  color: var(--primitive-green-900);
 }
 
 .agrox-cart-trigger {
@@ -958,6 +1061,17 @@ textarea.agrox-input {
 /* Modal shell: fixed header keeps the close button reachable while the body
    scrolls. Previously the close button was absolutely positioned inside the
    scroll box and disappeared on tall mobile content. */
+/* Pages were reusing .agrox-drawer-backdrop and overriding its z-index inline at
+   every call site because no modal backdrop class existed. */
+.agrox-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: var(--z-modal-backdrop);
+  animation: fadeIn 0.2s ease;
+}
+
 .agrox-modal {
   position: fixed;
   top: 50%;

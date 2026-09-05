@@ -30,6 +30,9 @@ export interface Product {
   isOrganic?: boolean;
   featured?: boolean;
   tags?: string[];
+  /** Created from the admin console. Survives an override of `seller`, so a
+   *  platform listing attributed to a real farmer is still traceable. */
+  listedByAdmin?: boolean;
 }
 
 export interface CartItem {
@@ -47,13 +50,15 @@ export interface ProductFilterState {
   sortBy: 'featured' | 'price-low' | 'price-high' | 'rating';
 }
 
-export type EscrowStatus = 
+export type EscrowStatus =
   | 'pending'
   | 'paid_escrow_secured'
   | 'dispatched'
   | 'delivered'
   | 'escrow_released'
-  | 'disputed';
+  | 'disputed'
+  | 'refund_pending'
+  | 'refunded';
 
 export interface OrderItem {
   productId: string;
@@ -63,6 +68,10 @@ export interface OrderItem {
   quantity: number;
   farmerId: string;
   farmerName: string;
+  /** Snapshotted at order time. Orders store items as JSONB, so the admin order
+   *  view cannot join back to products - without this, an admin listing
+   *  attributed to a real farmer would be invisible to the admin. */
+  listedByAdmin?: boolean;
 }
 
 export interface Order {
@@ -84,7 +93,7 @@ export interface ChatMessage {
   chatId: string;
   senderId: string;
   senderName: string;
-  senderRole: 'farmer' | 'buyer';
+  senderRole: 'farmer' | 'buyer' | 'admin';
   text: string;
   createdAt: string;
 }
@@ -101,3 +110,25 @@ export interface ChatThread {
   updatedAt: string;
 }
 
+
+export type RefundStatus =
+  | 'requested'
+  | 'processing'
+  | 'processed'
+  | 'failed'
+  | 'manual_pending';
+
+export interface Refund {
+  id: string;
+  orderId: string;
+  orderReference: string;
+  paystackReference?: string;
+  /** Naira, matching Order.totalAmount. Converted to kobo only at the Paystack boundary. */
+  amount: number;
+  reason: string;
+  status: RefundStatus;
+  paystackRefundId?: string;
+  adminNote?: string;
+  createdAt: string;
+  updatedAt: string;
+}

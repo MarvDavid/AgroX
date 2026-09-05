@@ -1,52 +1,102 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getOrderByReference, setOrderPaystackReference } from '@/lib/db';
+import {
+  UNCONFIGURED_MESSAGE,
+  getPaystackMode,
+  initializeTransaction,
+  mintPaymentReference,
+  toKobo,
+} from '@/lib/paystack';
 
+/**
+ * Starts a payment for an order that already exists.
+ *
+ * The amount comes from the stored order, never from the request body - the
+ * previous version took `amount` from the client, so the price paid was whatever
+ * the browser said it was.
+ */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { email, amount, reference, callback_url } = body;
+    const orderReference = String(body?.orderReference || '').trim();
 
-    const paystackSecret = process.env.PAYSTACK_SECRET_KEY;
-
-    // Amount in Kobo for Paystack (Naira * 100)
-    const amountInKobo = Math.round(Number(amount) * 100);
-    const txRef = reference || `AGX_PAY_${Date.now()}`;
-
-    if (paystackSecret) {
-      const response = await fetch('https://api.paystack.co/transaction/initialize', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${paystackSecret}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email,
-          amount: amountInKobo,
-          reference: txRef,
-          callback_url: callback_url || `${request.nextUrl.origin}/checkout`,
-          metadata: {
-            app: 'AgroX Escrow',
-          },
-        }),
-      });
-
-      const data = await response.json();
-      if (data.status) {
-        return NextResponse.json({
-          success: true,
-          authorization_url: data.data.authorization_url,
-          access_code: data.data.access_code,
-          reference: data.data.reference,
-        });
-      }
+    if (!orderReference) {
+      return NextResponse.json(
+        { success: false, error: 'An orderReference is required.' },
+        { status: 400 }
+      );
     }
 
-    // Fallback sandbox simulation mode when Paystack key isn't provided yet
+    const order = await getOrderByReference(orderReference);
+    if (!order) {
+      return NextResponse.json(
+        {
+          success: false,
+          code: 'ORDER_NOT_FOUND',
+          error:
+            'That order could not be found. If the server restarted mid-checkout while running without a database, the order was lost - please place it again.',
+        },
+        { status: 404 }
+      );
+    }
+
+    if (order.escrowStatus !== 'pending') {
+      return NextResponse.json(
+        { success: false, code: 'ALREADY_PAID', error: 'This order has already been paid for.' },
+        { status: 409 }
+      );
+    }
+
+    // A fresh reference per attempt: orders.reference is UNIQUE and Paystack
+    // rejects a reference it has seen before, so reusing it would make
+    // retry-after-abandon impossible.
+    const paymentReference = mintPaymentReference(order.reference);
+    const mode = getPaystackMode();
+
+    if (mode === 'unconfigured') {
+      return NextResponse.json(
+        { success: false, code: 'PAYMENTS_UNCONFIGURED', error: UNCONFIGURED_MESSAGE },
+        { status: 503 }
+      );
+    }
+
+    await setOrderPaystackReference(order.reference, paymentReference);
+
+    if (mode === 'sandbox') {
+      // A distinct branch, not a fallback: the sandbox never touches PaystackPop,
+      // because resumeTransaction() needs a real access code from a real
+      // initialize call and would simply error on a fabricated one.
+      return NextResponse.json({
+        success: true,
+        mode: 'sandbox',
+        reference: paymentReference,
+        amount: order.totalAmount,
+      });
+    }
+
+    const result = await initializeTransaction({
+      email: order.buyerEmail,
+      amountKobo: toKobo(order.totalAmount),
+      reference: paymentReference,
+      callbackUrl: `${request.nextUrl.origin}/checkout?ref=${encodeURIComponent(paymentReference)}`,
+      metadata: {
+        order_reference: order.reference,
+        buyer_name: order.buyerName,
+        delivery_address: order.shippingAddress,
+      },
+    });
+
+    if (!result.ok) {
+      return NextResponse.json({ success: false, error: result.error }, { status: 502 });
+    }
+
     return NextResponse.json({
       success: true,
-      mode: 'sandbox_simulation',
-      authorization_url: `${request.nextUrl.origin}/checkout?simulated_paystack=success&ref=${txRef}`,
-      access_code: `demo_access_${Date.now()}`,
-      reference: txRef,
+      mode: 'live',
+      authorization_url: result.data.authorization_url,
+      access_code: result.data.access_code,
+      reference: result.data.reference,
+      amount: order.totalAmount,
     });
   } catch (error: any) {
     return NextResponse.json(

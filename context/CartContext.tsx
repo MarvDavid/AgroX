@@ -1,7 +1,9 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { Product, CartItem } from '@/types';
+
+export type ToastVariant = 'success' | 'error';
 
 interface CartContextType {
   cart: CartItem[];
@@ -14,7 +16,8 @@ interface CartContextType {
   totalItems: number;
   totalPrice: number;
   toastMessage: string | null;
-  showToast: (msg: string) => void;
+  toastVariant: ToastVariant;
+  showToast: (msg: string, variant?: ToastVariant) => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -23,6 +26,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [toastVariant, setToastVariant] = useState<ToastVariant>('success');
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Load cart from localStorage on client side mount
   useEffect(() => {
@@ -45,12 +50,24 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
   }, [cart]);
 
-  const showToast = (msg: string) => {
+  // Variant defaults to 'success' so existing one-argument calls are unchanged.
+  // The admin console needs to report failures, which previously only ever
+  // reached console.error.
+  const showToast = (msg: string, variant: ToastVariant = 'success') => {
+    // Each call used to start its own timer, so a second toast inherited the
+    // first one's countdown and could vanish almost immediately.
+    if (toastTimer.current) clearTimeout(toastTimer.current);
     setToastMessage(msg);
-    setTimeout(() => {
+    setToastVariant(variant);
+    toastTimer.current = setTimeout(() => {
       setToastMessage(null);
-    }, 3000);
+      toastTimer.current = null;
+    }, variant === 'error' ? 5000 : 3000);
   };
+
+  useEffect(() => () => {
+    if (toastTimer.current) clearTimeout(toastTimer.current);
+  }, []);
 
   const addToCart = (product: Product, quantity = 1) => {
     setCart((prevCart) => {
@@ -105,6 +122,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         totalItems,
         totalPrice,
         toastMessage,
+        toastVariant,
         showToast,
       }}
     >

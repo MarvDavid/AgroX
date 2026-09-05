@@ -12,6 +12,7 @@ import {
   ArrowLeft
 } from 'lucide-react';
 import { ChatMessage, ChatThread } from '@/types';
+import { DEMO_BUYER, getBuyerIdentity } from '@/lib/identity';
 
 export default function DedicatedChatPage() {
   const [threads, setThreads] = useState<ChatThread[]>([]);
@@ -20,16 +21,22 @@ export default function DedicatedChatPage() {
   const [inputText, setInputText] = useState('');
   const [loading, setLoading] = useState(true);
   const [role, setRole] = useState<'buyer' | 'farmer'>('buyer');
+  const [identity, setIdentity] = useState(DEMO_BUYER);
   const [mobileView, setMobileView] = useState<'list' | 'chat'>('list');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // Identity is only available in the browser, so it is read after mount.
+  useEffect(() => {
+    setIdentity(getBuyerIdentity());
+  }, []);
+
   const currentUser = role === 'buyer'
-    ? { id: 'buyer-001', name: 'John Doe Enterprise', role: 'buyer' as const }
+    ? { id: identity.id, name: identity.name, role: 'buyer' as const }
     : { id: 's-101', name: 'SunValley Grain Farms', role: 'farmer' as const };
 
   useEffect(() => {
     fetchThreads();
-  }, [role]);
+  }, [role, identity.id]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -38,7 +45,7 @@ export default function DedicatedChatPage() {
   const fetchThreads = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/chat?action=threads');
+      const res = await fetch(`/api/chat?action=threads&userId=${encodeURIComponent(currentUser.id)}`);
       const data = await res.json();
       if (data.success && data.threads) {
         setThreads(data.threads);
@@ -272,10 +279,10 @@ export default function DedicatedChatPage() {
                     return (
                       <div key={msg.id} style={{ display: 'flex', flexDirection: 'column', alignItems: isMe ? 'flex-end' : 'flex-start' }}>
                         <div style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--color-text-secondary)', marginBottom: '0.2rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                          {msg.senderRole === 'farmer' ? <Store size={11} /> : <User size={11} />}
+                          {msg.senderRole === 'admin' ? <ShieldCheck size={11} /> : msg.senderRole === 'farmer' ? <Store size={11} /> : <User size={11} />}
                           {msg.senderName} ({msg.senderRole})
                         </div>
-                        <div style={{ maxWidth: '85%', padding: '0.75rem 1rem', borderRadius: isMe ? '14px 14px 2px 14px' : '14px 14px 14px 2px', background: isMe ? 'var(--color-action-primary)' : 'var(--color-surface-muted)', color: isMe ? '#FFFFFF' : 'var(--color-text-primary)', fontSize: '0.875rem', lineHeight: 1.45, boxShadow: 'var(--shadow-sm)', wordBreak: 'break-word' }}>
+                        <div style={{ maxWidth: '85%', padding: '0.75rem 1rem', borderRadius: isMe ? '14px 14px 2px 14px' : '14px 14px 14px 2px', background: isMe ? 'var(--color-action-primary)' : msg.senderRole === 'admin' ? 'var(--primitive-green-900)' : 'var(--color-surface-muted)', color: isMe || msg.senderRole === 'admin' ? '#FFFFFF' : 'var(--color-text-primary)', fontSize: '0.875rem', lineHeight: 1.45, boxShadow: 'var(--shadow-sm)', wordBreak: 'break-word' }}>
                           {msg.text}
                         </div>
                         <span style={{ fontSize: '0.65rem', color: 'var(--color-text-secondary)', marginTop: '0.2rem' }}>

@@ -16,13 +16,16 @@ import {
   X
 } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
-import { Product, Order } from '@/types';
+import { EscrowStatus, Product, Order } from '@/types';
+import StatusBadge from '@/components/ui/StatusBadge';
+import { ASSIGNABLE_CATEGORIES } from '@/lib/constants';
 
 export default function SellerPortalPage() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isListingModalOpen, setIsListingModalOpen] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [formError, setFormError] = useState('');
 
   const [products, setProducts] = useState<Product[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
@@ -40,7 +43,7 @@ export default function SellerPortalPage() {
     unit: 'bag (50kg)',
     description: '',
     stockCount: '100',
-    image: 'https://images.unsplash.com/photo-1595855759920-86582396756a?auto=format&fit=crop&q=80&w=800',
+    image: '',
     isOrganic: true,
   });
 
@@ -74,6 +77,7 @@ export default function SellerPortalPage() {
   const handleListingSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
+    setFormError('');
     try {
       const res = await fetch('/api/products', {
         method: 'POST',
@@ -98,22 +102,29 @@ export default function SellerPortalPage() {
       });
 
       const data = await res.json();
-      if (data.success && data.product) {
-        setSubmitted(true);
-        setProducts((prev) => [data.product, ...prev]);
-        setTimeout(() => {
-          setSubmitted(false);
-          setIsListingModalOpen(false);
-          setFormData({
-            ...formData,
-            productTitle: '',
-            price: '',
-            description: '',
-          });
-        }, 2000);
+
+      if (!res.ok || !data.success) {
+        // Previously this branch did nothing, so a rejected listing left the
+        // modal open with no explanation at all.
+        setFormError(data.error || 'Could not publish this listing.');
+        return;
       }
-    } catch (err) {
-      console.error('Error listing product:', err);
+
+      setSubmitted(true);
+      setProducts((prev) => [data.product, ...prev]);
+      setTimeout(() => {
+        setSubmitted(false);
+        setIsListingModalOpen(false);
+        setFormData((prev) => ({
+          ...prev,
+          productTitle: '',
+          price: '',
+          description: '',
+          image: '',
+        }));
+      }, 2000);
+    } catch (err: any) {
+      setFormError(err?.message || 'Could not publish this listing.');
     } finally {
       setSubmitting(false);
     }
@@ -126,7 +137,12 @@ export default function SellerPortalPage() {
     { id: 'messages', label: 'Buyer Chat', icon: MessageSquare },
   ];
 
-  const totalEscrowSales = orders.reduce((acc, curr) => acc + curr.totalAmount, 0);
+  // Only funded orders count as sales. Summing every order would count
+  // abandoned, unpaid carts now that orders are created before payment.
+  const FUNDED: EscrowStatus[] = ['paid_escrow_secured', 'dispatched', 'delivered', 'escrow_released'];
+  const totalEscrowSales = orders
+    .filter((o) => FUNDED.includes(o.escrowStatus))
+    .reduce((acc, curr) => acc + curr.totalAmount, 0);
 
   return (
     <PageShell muted wide>
@@ -231,7 +247,7 @@ export default function SellerPortalPage() {
                 <div className="agrox-stat-grid" style={{ marginBottom: 0 }}>
                   <div className="agrox-stat-card">
                     <div className="agrox-stat-label">Escrow Secured Revenue</div>
-                    <div className="agrox-stat-value">{formatCurrency(totalEscrowSales || 1450000)}</div>
+                    <div className="agrox-stat-value">{formatCurrency(totalEscrowSales)}</div>
                   </div>
                   <div className="agrox-stat-card">
                     <div className="agrox-stat-label">Active Orders</div>
@@ -274,7 +290,7 @@ export default function SellerPortalPage() {
                       <div key={ord.id} style={{ padding: '1rem', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', background: 'var(--color-surface-muted)' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.4rem' }}>
                           <span style={{ fontWeight: 800, fontSize: '0.925rem' }}>Ref: {ord.reference}</span>
-                          <span style={{ fontWeight: 700, color: 'var(--color-success)', fontSize: '0.8rem' }}>{ord.escrowStatus.toUpperCase()}</span>
+                          <StatusBadge status={ord.escrowStatus} />
                         </div>
                         <div style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)' }}>Buyer: {ord.buyerName} ({ord.buyerEmail})</div>
                         <div style={{ fontSize: '0.9rem', fontWeight: 700, marginTop: '0.4rem', color: 'var(--color-action-primary)' }}>Amount: {formatCurrency(ord.totalAmount)}</div>
@@ -338,12 +354,10 @@ export default function SellerPortalPage() {
                     <div style={{ minWidth: 0 }}>
                       <label className="agrox-label">Category</label>
                       <select className="agrox-input" value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })}>
-                        <option>Fresh Produce</option>
-                        <option>Grains & Cereals</option>
-                        <option>Seeds & Seedlings</option>
-                        <option>Fertilizers & Soil</option>
-                        <option>Farm Equipment</option>
-                        <option>Livestock & Poultry</option>
+                        {/* Was a hardcoded copy of this list that could drift from lib/data.ts. */}
+                        {ASSIGNABLE_CATEGORIES.map((c) => (
+                          <option key={c} value={c}>{c}</option>
+                        ))}
                       </select>
                     </div>
                     <div style={{ minWidth: 0 }}>
@@ -363,10 +377,62 @@ export default function SellerPortalPage() {
                     </div>
                   </div>
 
+                  {/* These three lived in formData with no UI at all, so every
+                      listing shipped with the same stock photo and 100 units. */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))', gap: '0.85rem' }}>
+                    <div style={{ minWidth: 0 }}>
+                      <label className="agrox-label">Stock Quantity</label>
+                      <input type="number" required min={0} placeholder="100" className="agrox-input" value={formData.stockCount} onChange={(e) => setFormData({ ...formData, stockCount: e.target.value })} />
+                    </div>
+                    <div style={{ minWidth: 0, display: 'flex', alignItems: 'flex-end', paddingBottom: '0.55rem' }}>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.875rem', fontWeight: 600, cursor: 'pointer' }}>
+                        <input
+                          type="checkbox"
+                          checked={formData.isOrganic}
+                          onChange={(e) => setFormData({ ...formData, isOrganic: e.target.checked })}
+                          style={{ accentColor: 'var(--color-success)', width: '16px', height: '16px' }}
+                        />
+                        Certified organic
+                      </label>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="agrox-label">Product Image URL</label>
+                    <input type="url" placeholder="https://..." className="agrox-input" value={formData.image} onChange={(e) => setFormData({ ...formData, image: e.target.value })} />
+                    {formData.image ? (
+                      <img
+                        src={formData.image}
+                        alt="Listing preview"
+                        style={{ marginTop: '0.5rem', width: '100%', height: '120px', objectFit: 'cover', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)' }}
+                        onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                      />
+                    ) : (
+                      <div style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', marginTop: '0.3rem' }}>
+                        Leave blank to use a generic placeholder image.
+                      </div>
+                    )}
+                  </div>
+
                   <div>
                     <label className="agrox-label">Harvest Description & Moisture Level</label>
                     <textarea rows={3} required placeholder="Sun-dried yellow maize, 12% moisture level, high quality." className="agrox-input" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} />
                   </div>
+
+                  {formError && (
+                    <div
+                      role="alert"
+                      style={{
+                        display: 'flex', alignItems: 'flex-start', gap: '0.5rem',
+                        background: 'rgba(211, 47, 47, 0.1)', color: 'var(--color-error)',
+                        borderRadius: 'var(--radius-md)', padding: '0.7rem 0.85rem',
+                        fontSize: '0.825rem', fontWeight: 600, lineHeight: 1.45,
+                      }}
+                    >
+                      <AlertCircle size={16} style={{ flexShrink: 0, marginTop: '0.1rem' }} />
+                      <span style={{ minWidth: 0, overflowWrap: 'anywhere' }}>{formError}</span>
+                    </div>
+                  )}
 
                   <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.35rem' }}>
                     <button type="button" onClick={() => setIsListingModalOpen(false)} className="agrox-btn" style={{ flex: 1, background: 'var(--color-surface-muted)', color: 'var(--color-text-primary)' }}>Cancel</button>
